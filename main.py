@@ -107,7 +107,7 @@ if btn_analyze:
                             대표 분위기 컬러<br><br>{color_name}
                         </div>
                         """,
-                        unsafe_allow_dict_style=True,
+                        unsafe_allow_html=True,  # ⭕ unsafe_allow_html=True 로 변경!
                     )
 
                 st.divider()
