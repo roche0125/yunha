@@ -1,5 +1,6 @@
 import json
 import pandas as pd
+import plotly.express as px
 import streamlit as st
 from google import genai
 from google.genai import types
@@ -9,6 +10,20 @@ st.set_page_config(
     page_title="AI 음악 감정 & 분위기 분석기",
     page_icon="🎵",
     layout="wide",
+)
+
+# ✨ 전체 글씨체 변경 (Pretendard 폰트 적용)
+st.markdown(
+    """
+    <style>
+    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+    
+    html, body, [class*="css"], div, span, h1, h2, h3, h4, h5, h6, p {
+        font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
 )
 
 st.title("🎵 AI 기반 노래 가사 감정 & 분위기 분석기")
@@ -72,9 +87,9 @@ if btn_analyze:
                 - color_hex는 Hex 컬러 코드 형태로 제공할 것.
                 """
 
-                # API 호출 (최신 Gemini 3.8 Flash 모델 사용)
+                # API 호출 (Gemini 2.5 Flash 모델)
                 response = client.models.generate_content(
-                    model="gemini-3.8-flash",
+                    model="gemini-2.5-flash",
                     contents=prompt,
                     config=types.GenerateContentConfig(
                         response_mime_type="application/json",
@@ -86,8 +101,6 @@ if btn_analyze:
 
                 st.success("분석이 완료되었습니다! 🎉")
                 st.divider()
-
-                import plotly.express as px
 
                 # 📌 1. 핵심 주제 요약 및 분위기 컬러 카드
                 st.subheader("📌 곡 핵심 주제 & 이미지 테마")
@@ -109,7 +122,7 @@ if btn_analyze:
                             대표 분위기 컬러<br><br>{color_name}
                         </div>
                         """,
-                        unsafe_allow_html=True,  # ⭕ unsafe_allow_html=True 로 변경!
+                        unsafe_allow_html=True,
                     )
 
                 st.divider()
@@ -121,17 +134,15 @@ if btn_analyze:
                 if not df_emotions.empty:
                     col_chart, col_data = st.columns([2, 1])
                     with col_chart:
-                        # Plotly를 활용한 세로 막대 그래프 생성
+                        # Plotly 세로 막대 그래프
                         fig = px.bar(
                             df_emotions,
-                            x="emotion",  # x축: 감정 요소 (세로 막대가 됨!)
-                            y="ratio",  # y축: 비율(%)
-                            text="ratio",  # 막대 위에 숫자 표시
-                            color="emotion",  # 감정별로 알록달록 색상 적용
+                            x="emotion",
+                            y="ratio",
+                            text="ratio",
+                            color="emotion",
                             labels={"emotion": "감정 요소", "ratio": "비율 (%)"},
                         )
-
-                        # 막대 위 숫자 표시 형식 및 레이아웃 설정
                         fig.update_traces(
                             texttemplate="%{text}%",
                             textposition="outside",
@@ -143,18 +154,20 @@ if btn_analyze:
                             height=350,
                             xaxis_title=None,
                             yaxis_title="비율 (%)",
-                            font=dict(family="NanumGothic, sans-serif"),  # 그래프 폰트 설정
+                            font=dict(family="Pretendard, sans-serif"),
                         )
-
                         st.plotly_chart(fig, use_container_width=True)
 
-                   with col_data:
-                       st.dataframe(
-                           df_emotions.rename(
-                               columns={"emotion": "감정 요소", "ratio": "비율(%)"}
-                           ),
-                           use_container_width=True,
-                   )
+                    with col_data:
+                        st.dataframe(
+                            df_emotions.rename(
+                                columns={
+                                    "emotion": "감정 요소",
+                                    "ratio": "비율(%)",
+                                }
+                            ),
+                            use_container_width=True,
+                        )
 
                 st.divider()
 
@@ -170,9 +183,4 @@ if btn_analyze:
                             )
 
             except Exception as e:
-                if "503" in str(e):
-                    st.error(
-                        "현재 구글 AI 서버에 사용자가 많아 일시적으로 응답이 지연되고 있습니다. 5~10초 뒤 다시 버튼을 눌러주세요! 🔄"
-                    )
-                else:
-                    st.error(f"분석 중 오류가 발생했습니다: {e}")
+                st.error(f"분석 중 오류가 발생했습니다: {e}")
