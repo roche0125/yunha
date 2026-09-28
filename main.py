@@ -12,14 +12,38 @@ st.set_page_config(
     layout="wide",
 )
 
-# 전체 글씨체 변경 (Pretendard 폰트)
+# 전체 글씨체 변경 (나눔손글씨 펜 / Nanum Pen Script 폰트)
 st.markdown(
     """
     <style>
-    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+    @import url('https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap');
     
-    html, body, [class*="css"], div, span, h1, h2, h3, h4, h5, h6, p {
-        font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif !important;
+html, body, [class*="css"], div, span, h1, h2, h3, h4, h5, h6, p, label, input, button {
+        font-family: 'Nanum Pen Script', cursive, sans-serif !important;
+        font-size: 20px; /* 손글씨 폰트 특성에 맞춰 기본 크기를 조금 키웠습니다 */
+    }
+
+    h1 { font-size: 42px !important; }
+    h2 { font-size: 36px !important; }
+    h3 { font-size: 30px !important; }
+    
+    /* 주요 테마 키워드 전용 커스텀 스타일 (글씨 크기 축소) */
+    .keyword-card {
+        background-color: #F0F4F8;
+        border-radius: 8px;
+        padding: 8px 12px;
+        text-align: center;
+        margin-bottom: 8px;
+    }
+    .keyword-label {
+        font-size: 14px !important;
+        color: #666666;
+        margin-bottom: 2px;
+    }
+    .keyword-value {
+        font-size: 18px !important;
+        font-weight: bold;
+        color: #1E293B;
     }
     </style>
     """,
