@@ -13,20 +13,20 @@ st.set_page_config(
     layout="wide",
 )
 
-# 전체 글씨체 변경 (나눔손글씨 펜 / Nanum Pen Script 폰트)
+# 전체 글씨체 변경 (개구 / Gaegu 폰트 적용)
 st.markdown(
     """
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap');
     
     html, body, [class*="css"], div, span, h1, h2, h3, h4, h5, h6, p, label, input, button {
-        font-family: 'Nanum Pen Script', cursive, sans-serif !important;
-        font-size: 20px;
+        font-family: 'Gaegu', cursive, sans-serif !important;
+        font-size: 22px; /* 개구 폰트 특성에 맞춰 보기 편하게 크기 조절 */
     }
 
-    h1 { font-size: 42px !important; }
-    h2 { font-size: 36px !important; }
-    h3 { font-size: 30px !important; }
+    h1 { font-size: 44px !important; }
+    h2 { font-size: 38px !important; }
+    h3 { font-size: 32px !important; }
     
     /* 주요 테마 키워드 전용 커스텀 스타일 (글씨 크기 축소) */
     .keyword-card {
@@ -37,12 +37,12 @@ st.markdown(
         margin-bottom: 8px;
     }
     .keyword-label {
-        font-size: 14px !important;
+        font-size: 15px !important;
         color: #666666;
         margin-bottom: 2px;
     }
     .keyword-value {
-        font-size: 18px !important;
+        font-size: 20px !important;
         font-weight: bold;
         color: #1E293B;
     }
@@ -83,7 +83,7 @@ if btn_analyze:
             "AI가 노래 가사를 분석하고 정서를 시각화하는 중입니다... 🎼"
         ):
             try:
-                # Gemini Client 생성 (google-genai 신버전 SDK)
+                # Gemini Client 생성
                 client = genai.Client(api_key=api_key)
 
                 # 프롬프트 구성 (JSON 형식으로 응답 받기)
@@ -116,21 +116,20 @@ if btn_analyze:
 
                 # 503 과부하 방지용 자동 재시도(Retry) 함수
                 response = None
-                max_retries = 5  # 최대 5번까지 재시도
-                retry_delay = 3  # 3초 대기
+                max_retries = 5
+                retry_delay = 3
 
                 for attempt in range(max_retries):
                     try:
                         response = client.models.generate_content(
-                            model="gemini-3.8-flash",  # 최신 지원 모델 사용
+                            model="gemini-3.8-flash",
                             contents=prompt,
                             config=types.GenerateContentConfig(
                                 response_mime_type="application/json",
                             ),
                         )
-                        break  # 성공 시 반복문 탈출!
+                        break
                     except Exception as err:
-                        # 503이나 과부하 에러가 나면 잠시 쉬었다가 재시도
                         if (
                             "503" in str(err)
                             or "UNAVAILABLE" in str(err)
@@ -139,7 +138,7 @@ if btn_analyze:
                             if attempt < max_retries - 1:
                                 time.sleep(retry_delay)
                                 continue
-                        raise err  # 다른 에러거나 마지막 재시도 실패 시 예외 던짐
+                        raise err
 
                 # JSON 파싱
                 data = json.loads(response.text)
@@ -163,7 +162,7 @@ if btn_analyze:
                     color_name = data.get("vibe_color", "추천 컬러")
                     st.markdown(
                         f"""
-                        <div style="background-color: {hex_code}; padding: 25px; border-radius: 12px; text-align: center; color: white; font-weight: bold; font-size: 24px;">
+                        <div style="background-color: {hex_code}; padding: 25px; border-radius: 12px; text-align: center; color: white; font-weight: bold; font-size: 26px;">
                             대표 분위기 컬러<br><br>{color_name}
                         </div>
                         """,
@@ -198,9 +197,7 @@ if btn_analyze:
                             height=350,
                             xaxis_title=None,
                             yaxis_title="비율 (%)",
-                            font=dict(
-                                family="Nanum Pen Script, cursive", size=18
-                            ),
+                            font=dict(family="Gaegu, cursive", size=20),
                         )
                         st.plotly_chart(fig, use_container_width=True)
 
@@ -217,7 +214,7 @@ if btn_analyze:
 
                 st.divider()
 
-                # 🔑 3. 주요 가사 테마 키워드
+                # 🔑 3. 주요 가사 테마 키워드 (글씨 크기 축소)
                 st.subheader("🔑 가사 속 주요 테마 키워드 Top 5")
                 keywords = data.get("keywords", [])
                 if keywords:
