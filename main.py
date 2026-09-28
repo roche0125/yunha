@@ -16,10 +16,10 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Gaegu&display=swap');
     
 html, body, [class*="css"], div, span, h1, h2, h3, h4, h5, h6, p, label, input, button {
-        font-family: 'Nanum Pen Script', cursive, sans-serif !important;
+        font-family: "Gaegu", sans-serif;
         font-size: 20px; /* 손글씨 폰트 특성에 맞춰 기본 크기를 조금 키웠습니다 */
     }
 
