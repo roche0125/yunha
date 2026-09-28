@@ -231,5 +231,17 @@ if btn_analyze:
                                 unsafe_allow_html=True,
                             )
 
-            except Exception as e:
-                st.error(f"분석 중 오류가 발생했습니다: {e}")
+except Exception as e:
+                # 503 과부하 또는 서버 오류 발생 시 친절한 안내 메시지 출력
+                if (
+                    "503" in str(e)
+                    or "UNAVAILABLE" in str(e)
+                    or "high demand" in str(e)
+                ):
+                    st.warning(
+                        "⏳ 현재 AI 서버 사용량이 많아 응답이 지연되고 있습니다. 잠시 후 다시 시도해 주세요! 💙"
+                    )
+                else:
+                    st.error(
+                        "⚠️ 분석 도중 일시적인 오류가 발생했습니다. 잠시 후 다시 시도해 주세요!"
+                    )
