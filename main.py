@@ -187,6 +187,8 @@ if btn_analyze:
                 df_emotions = pd.DataFrame(data.get("emotions", []))
 
                 if not df_emotions.empty:
+                    hex_code = data.get("color_hex", "#3182CE")  # 대표 컬러 가져오기
+                    
                     col_chart, col_data = st.columns([2, 1])
                     with col_chart:
                         fig = px.bar(
@@ -194,12 +196,13 @@ if btn_analyze:
                             x="emotion",
                             y="ratio",
                             text="ratio",
-                            color="emotion",
                             labels={"emotion": "감정 요소", "ratio": "비율 (%)"},
                         )
+                        # 막대 색상을 대표 분위기 컬러(hex_code)로 적용
                         fig.update_traces(
                             texttemplate="%{text}%",
                             textposition="outside",
+                            marker_color=hex_code,
                             marker_line_color="rgb(8,48,107)",
                             marker_line_width=1.5,
                         )
