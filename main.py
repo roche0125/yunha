@@ -21,14 +21,14 @@ st.markdown(
     
     html, body, [class*="css"], div, span, h1, h2, h3, h4, h5, h6, p, label, input, button {
         font-family: 'Gaegu', cursive, sans-serif !important;
-        font-size: 22px; /* 개구 폰트 특성에 맞춰 보기 편하게 크기 조절 */
+        font-size: 22px;
     }
 
     h1 { font-size: 44px !important; }
     h2 { font-size: 38px !important; }
     h3 { font-size: 32px !important; }
     
-    /* 주요 테마 키워드 전용 커스텀 스타일 (글씨 크기 축소) */
+    /* 주요 테마 키워드 전용 커스텀 스타일 */
     .keyword-card {
         background-color: #F0F4F8;
         border-radius: 8px;
@@ -114,31 +114,42 @@ if btn_analyze:
                 - color_hex는 Hex 컬러 코드 형태로 제공할 것.
                 """
 
-                # 503 과부하 방지용 자동 재시도(Retry) 함수
+                # 503 과부하 방지: 여러 모델을 순차적으로 시도하는 Fallback 로직
                 response = None
-                max_retries = 5
-                retry_delay = 3
+                models_to_try = [
+                    "gemini-3.8-flash",
+                    "gemini-2.5-flash",
+                    "gemini-1.5-flash",
+                ]
+                last_exception = None
 
-                for attempt in range(max_retries):
-                    try:
-                        response = client.models.generate_content(
-                            model="gemini-3.8-flash",
-                            contents=prompt,
-                            config=types.GenerateContentConfig(
-                                response_mime_type="application/json",
-                            ),
-                        )
-                        break
-                    except Exception as err:
-                        if (
-                            "503" in str(err)
-                            or "UNAVAILABLE" in str(err)
-                            or "high demand" in str(err)
-                        ):
-                            if attempt < max_retries - 1:
-                                time.sleep(retry_delay)
+                for model_name in models_to_try:
+                    for attempt in range(3):
+                        try:
+                            response = client.models.generate_content(
+                                model=model_name,
+                                contents=prompt,
+                                config=types.GenerateContentConfig(
+                                    response_mime_type="application/json",
+                                ),
+                            )
+                            break
+                        except Exception as err:
+                            last_exception = err
+                            if (
+                                "503" in str(err)
+                                or "UNAVAILABLE" in str(err)
+                                or "high demand" in str(err)
+                            ):
+                                time.sleep(2)
                                 continue
-                        raise err
+                            else:
+                                raise err
+                    if response is not None:
+                        break
+
+                if response is None and last_exception is not None:
+                    raise last_exception
 
                 # JSON 파싱
                 data = json.loads(response.text)
@@ -214,7 +225,7 @@ if btn_analyze:
 
                 st.divider()
 
-                # 🔑 3. 주요 가사 테마 키워드 (글씨 크기 축소)
+                # 🔑 3. 주요 가사 테마 키워드 Top 5
                 st.subheader("🔑 가사 속 주요 테마 키워드 Top 5")
                 keywords = data.get("keywords", [])
                 if keywords:
@@ -231,7 +242,7 @@ if btn_analyze:
                                 unsafe_allow_html=True,
                             )
 
-except Exception as e:
+            except Exception as e:
                 # 503 과부하 또는 서버 오류 발생 시 친절한 안내 메시지 출력
                 if (
                     "503" in str(e)
