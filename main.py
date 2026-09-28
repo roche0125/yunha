@@ -1,4 +1,5 @@
 import json
+import time
 import pandas as pd
 import plotly.express as px
 import streamlit as st
@@ -16,11 +17,11 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Gaegu&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap');
     
-html, body, [class*="css"], div, span, h1, h2, h3, h4, h5, h6, p, label, input, button {
-        font-family: "Gaegu", sans-serif;
-        font-size: 20px; /* 손글씨 폰트 특성에 맞춰 기본 크기를 조금 키웠습니다 */
+    html, body, [class*="css"], div, span, h1, h2, h3, h4, h5, h6, p, label, input, button {
+        font-family: 'Nanum Pen Script', cursive, sans-serif !important;
+        font-size: 20px;
     }
 
     h1 { font-size: 42px !important; }
@@ -78,9 +79,11 @@ if btn_analyze:
     elif not song_title or not artist:
         st.warning("노래 제목과 가수 이름을 모두 입력해 주세요.")
     else:
-        with st.spinner("AI가 노래 가사를 분석하고 정서를 시각화하는 중입니다... 🎼"):
+        with st.spinner(
+            "AI가 노래 가사를 분석하고 정서를 시각화하는 중입니다... 🎼"
+        ):
             try:
-                # Gemini Client 생성
+                # Gemini Client 생성 (google-genai 신버전 SDK)
                 client = genai.Client(api_key=api_key)
 
                 # 프롬프트 구성 (JSON 형식으로 응답 받기)
@@ -111,14 +114,32 @@ if btn_analyze:
                 - color_hex는 Hex 컬러 코드 형태로 제공할 것.
                 """
 
-                # API 호출 (최신 Gemini 3.8 Flash 모델 사용)
-                response = client.models.generate_content(
-                    model="gemini-3.8-flash",
-                    contents=prompt,
-                    config=types.GenerateContentConfig(
-                        response_mime_type="application/json",
-                    ),
-                )
+                # 503 과부하 방지용 자동 재시도(Retry) 함수
+                response = None
+                max_retries = 5  # 최대 5번까지 재시도
+                retry_delay = 3  # 3초 대기
+
+                for attempt in range(max_retries):
+                    try:
+                        response = client.models.generate_content(
+                            model="gemini-3.8-flash",  # 최신 지원 모델 사용
+                            contents=prompt,
+                            config=types.GenerateContentConfig(
+                                response_mime_type="application/json",
+                            ),
+                        )
+                        break  # 성공 시 반복문 탈출!
+                    except Exception as err:
+                        # 503이나 과부하 에러가 나면 잠시 쉬었다가 재시도
+                        if (
+                            "503" in str(err)
+                            or "UNAVAILABLE" in str(err)
+                            or "high demand" in str(err)
+                        ):
+                            if attempt < max_retries - 1:
+                                time.sleep(retry_delay)
+                                continue
+                        raise err  # 다른 에러거나 마지막 재시도 실패 시 예외 던짐
 
                 # JSON 파싱
                 data = json.loads(response.text)
@@ -142,7 +163,7 @@ if btn_analyze:
                     color_name = data.get("vibe_color", "추천 컬러")
                     st.markdown(
                         f"""
-                        <div style="background-color: {hex_code}; padding: 25px; border-radius: 12px; text-align: center; color: white; font-weight: bold;">
+                        <div style="background-color: {hex_code}; padding: 25px; border-radius: 12px; text-align: center; color: white; font-weight: bold; font-size: 24px;">
                             대표 분위기 컬러<br><br>{color_name}
                         </div>
                         """,
@@ -158,7 +179,6 @@ if btn_analyze:
                 if not df_emotions.empty:
                     col_chart, col_data = st.columns([2, 1])
                     with col_chart:
-                        # Plotly 세로 막대 그래프
                         fig = px.bar(
                             df_emotions,
                             x="emotion",
@@ -178,7 +198,9 @@ if btn_analyze:
                             height=350,
                             xaxis_title=None,
                             yaxis_title="비율 (%)",
-                            font=dict(family="Pretendard, sans-serif"),
+                            font=dict(
+                                family="Nanum Pen Script, cursive", size=18
+                            ),
                         )
                         st.plotly_chart(fig, use_container_width=True)
 
@@ -202,26 +224,15 @@ if btn_analyze:
                     kw_cols = st.columns(len(keywords))
                     for idx, kw in enumerate(keywords):
                         with kw_cols[idx]:
-                            st.metric(
-                                label=f"Keyword {idx+1}", value=f"# {kw}"
+                            st.markdown(
+                                f"""
+                                <div class="keyword-card">
+                                    <div class="keyword-label">Keyword {idx+1}</div>
+                                    <div class="keyword-value"># {kw}</div>
+                                </div>
+                                """,
+                                unsafe_allow_html=True,
                             )
 
             except Exception as e:
                 st.error(f"분석 중 오류가 발생했습니다: {e}")
-
-import time
-import google.generativeai as genai
-
-# 에러 발생 시 재시도하는 예시 함수
-def call_gemini_with_retry(model, prompt, retries=3, delay=5):
-    for i in range(retries):
-        try:
-            response = model.generate_content(prompt)
-            return response
-        except Exception as e:
-            if "503" in str(e) or "UNAVAILABLE" in str(e):
-                print(f"서버에 요청이 몰려 잠시 대기 중... ({i+1}/{retries})")
-                time.sleep(delay)  # delay초 동안 대기 후 재시도
-            else:
-                raise e
-    raise Exception("여러 번 시도했지만 서버 응답을 받지 못했어 🥺")
