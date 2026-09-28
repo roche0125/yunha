@@ -72,9 +72,9 @@ if btn_analyze:
                 - color_hex는 Hex 컬러 코드 형태로 제공할 것.
                 """
 
-                # API 호출 (Gemini 2.5 Flash 모델)
+                # API 호출 (최신 Gemini 3.8 Flash 모델 사용)
                 response = client.models.generate_content(
-                    model="gemini-2.5-flash",
+                    model="gemini-3.8-flash",
                     contents=prompt,
                     config=types.GenerateContentConfig(
                         response_mime_type="application/json",
