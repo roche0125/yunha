@@ -148,4 +148,9 @@ if btn_analyze:
                             )
 
             except Exception as e:
-                st.error(f"분석 중 오류가 발생했습니다: {e}")
+                if "503" in str(e):
+                    st.error(
+                        "현재 구글 AI 서버에 사용자가 많아 일시적으로 응답이 지연되고 있습니다. 5~10초 뒤 다시 버튼을 눌러주세요! 🔄"
+                    )
+                else:
+                    st.error(f"분석 중 오류가 발생했습니다: {e}")
