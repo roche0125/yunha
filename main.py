@@ -87,6 +87,8 @@ if btn_analyze:
                 st.success("분석이 완료되었습니다! 🎉")
                 st.divider()
 
+                import plotly.express as px
+
                 # 📌 1. 핵심 주제 요약 및 분위기 컬러 카드
                 st.subheader("📌 곡 핵심 주제 & 이미지 테마")
 
@@ -112,27 +114,47 @@ if btn_analyze:
 
                 st.divider()
 
-                # 📊 2. 가사 감정 비율 시각화
+                # 📊 2. 가사 감정 비율 시각화 (세로 막대 그래프)
                 st.subheader("📊 감정 구성 비율 (Emotion Analysis)")
                 df_emotions = pd.DataFrame(data.get("emotions", []))
 
                 if not df_emotions.empty:
                     col_chart, col_data = st.columns([2, 1])
                     with col_chart:
-                        st.bar_chart(
-                            df_emotions.set_index("emotion")["ratio"],
-                            color=hex_code,
+                        # Plotly를 활용한 세로 막대 그래프 생성
+                        fig = px.bar(
+                            df_emotions,
+                            x="emotion",  # x축: 감정 요소 (세로 막대가 됨!)
+                            y="ratio",  # y축: 비율(%)
+                            text="ratio",  # 막대 위에 숫자 표시
+                            color="emotion",  # 감정별로 알록달록 색상 적용
+                            labels={"emotion": "감정 요소", "ratio": "비율 (%)"},
                         )
-                    with col_data:
-                        st.dataframe(
-                            df_emotions.rename(
-                                columns={
-                                    "emotion": "감정 요소",
-                                    "ratio": "비율(%)",
-                                }
-                            ),
-                            use_container_width=True,
+
+                        # 막대 위 숫자 표시 형식 및 레이아웃 설정
+                        fig.update_traces(
+                            texttemplate="%{text}%",
+                            textposition="outside",
+                            marker_line_color="rgb(8,48,107)",
+                            marker_line_width=1.5,
                         )
+                        fig.update_layout(
+                            showlegend=False,
+                            height=350,
+                            xaxis_title=None,
+                            yaxis_title="비율 (%)",
+                            font=dict(family="NanumGothic, sans-serif"),  # 그래프 폰트 설정
+                        )
+
+                        st.plotly_chart(fig, use_container_width=True)
+
+                   with col_data:
+                       st.dataframe(
+                           df_emotions.rename(
+                               columns={"emotion": "감정 요소", "ratio": "비율(%)"}
+                           ),
+                           use_container_width=True,
+                   )
 
                 st.divider()
 
