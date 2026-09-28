@@ -208,3 +208,20 @@ if btn_analyze:
 
             except Exception as e:
                 st.error(f"분석 중 오류가 발생했습니다: {e}")
+
+import time
+import google.generativeai as genai
+
+# 에러 발생 시 재시도하는 예시 함수
+def call_gemini_with_retry(model, prompt, retries=3, delay=5):
+    for i in range(retries):
+        try:
+            response = model.generate_content(prompt)
+            return response
+        except Exception as e:
+            if "503" in str(e) or "UNAVAILABLE" in str(e):
+                print(f"서버에 요청이 몰려 잠시 대기 중... ({i+1}/{retries})")
+                time.sleep(delay)  # delay초 동안 대기 후 재시도
+            else:
+                raise e
+    raise Exception("여러 번 시도했지만 서버 응답을 받지 못했어 🥺")
