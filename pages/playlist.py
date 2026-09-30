@@ -113,7 +113,7 @@ if st.button("✨ 맞춤 플레이리스트 생성하기", type="primary", use_c
             
             try:
                 response = client.models.generate_content(
-                    model='gemini-2.5-flash',
+                    model='gemini-3.8-flash',  # 👈 최신 모델명으로 변경!
                     contents=prompt
                 )
                 st.success("너만을 위한 플레이리스트 완성! 💙")
