@@ -119,7 +119,12 @@ if st.button("✨ 맞춤 플레이리스트 생성하기", type="primary", use_c
                 st.success("너만을 위한 플레이리스트 완성! 💙")
                 st.markdown(response.text)
             except Exception as e:
-                st.error(f"AI 추천 중 오류가 발생했어: {e}")
+                err_msg = str(e)
+                # 503 과부하 에러가 발생하면 다정한 Please wait 안내 표시!
+                if "503" in err_msg or "UNAVAILABLE" in err_msg or "high demand" in err_msg:
+                    st.warning("⏳ **Please wait...** 사용자가 많아서 Gemini AI 서버가 잠시 붐비고 있어! 10~20초 정도 기다렸다가 다시 버튼을 눌러줘 💙✨")
+                else:
+                    st.error(f"AI 추천 중 오류가 발생했어: {e}")
     
     # 2. API 키 없을 시 알고리즘 대체 생성
     else:
