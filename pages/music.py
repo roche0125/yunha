@@ -13,15 +13,15 @@ st.set_page_config(
     layout="wide",
 )
 
-# 전체 글씨체 변경 (개구 / Gaegu 폰트 적용)
+# 전체 글씨체 변경 
 st.markdown(
     """
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap');
     
     html, body, [class*="css"], div, span, h1, h2, h3, h4, h5, h6, p, label, input, button {
-        font-family: 'Gaegu', cursive, sans-serif !important;
-        font-size: 22px;
+        font-family: 'Gowun Batang', serif !important;
+        font-size: 20px;
     }
 
     h1 { font-size: 44px !important; }
@@ -211,7 +211,7 @@ if btn_analyze:
                             height=350,
                             xaxis_title=None,
                             yaxis_title="비율 (%)",
-                            font=dict(family="Gaegu, cursive", size=20),
+                            font=dict(family="Gowun Batang, serif", size=18),
                         )
                         st.plotly_chart(fig, use_container_width=True)
 
