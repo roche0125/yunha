@@ -6,6 +6,25 @@ from google import genai
 # 페이지 기본 설정
 st.set_page_config(page_title="AI Playlist", page_icon="🎧", layout="wide")
 
+# ----------------------------------------------------
+# Gowun Batang (구름 바탕) 폰트 글로벌 스타일 적용 💙
+# ----------------------------------------------------
+font_css = """
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap');
+
+html, body, [class*="css"], [class*="st-"] {
+    font-family: 'Gowun Batang', serif !important;
+}
+
+h1, h2, h3, h4, h5, h6, .stMarkdown {
+    font-family: 'Gowun Batang', serif !important;
+    font-weight: 700;
+}
+</style>
+"""
+st.markdown(font_css, unsafe_allow_html=True)
+
 # 1. API 키 설정 (Google GenAI 최신 SDK)
 api_key = st.secrets.get("GEMINI_API_KEY") or os.environ.get("GEMINI_API_KEY")
 
