@@ -12,6 +12,15 @@ st.markdown(
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap');
 
+    /* 1. 사이드바 여닫기 버튼 깨짐 현상(keyboard_double_...) 완벽 차단 */
+    [data-testid="stSidebarCollapseButton"] {
+        color: transparent !important;
+    }
+    [data-testid="stSidebarCollapseButton"] button span {
+        font-family: 'Material Symbols Outlined', 'Material Icons' !important;
+        font-size: 0px !important;
+    }
+   
     /* 전체 배경 다크 모드 설정 */
     .stApp {
         background-color: #0e0e10;
@@ -93,11 +102,3 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-
-/* 사이드바 여닫기 버튼 깨짐 현상(keyboard_double_...) 완벽 차단 */
-[data-testid="stSidebarCollapseButton"] {
-    color: transparent !important;
-}
-[data-testid="stSidebarCollapseButton"] svg {
-    fill: #e0e0e0 !important; /* 아이콘 색상을 실버/화이트로 강제 지정 */
-}
