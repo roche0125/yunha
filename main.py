@@ -93,3 +93,11 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+/* 사이드바 여닫기 버튼 깨짐 현상(keyboard_double_...) 완벽 차단 */
+[data-testid="stSidebarCollapseButton"] {
+    color: transparent !important;
+}
+[data-testid="stSidebarCollapseButton"] svg {
+    fill: #e0e0e0 !important; /* 아이콘 색상을 실버/화이트로 강제 지정 */
+}
