@@ -1,1 +1,12 @@
+[theme]
+# 메인 강조 색상 (실버 메탈릭 느낌)
+primaryColor = "#C0C0C0"
 
+# 앱 메인 배경색 (딥 블랙)
+backgroundColor = "#0E0E10"
+
+# 사이드바 & 카드 요소 배경색 (매트 차콜/다크 그레이)
+secondaryBackgroundColor = "#18181B"
+
+# 기본 글자 색상 (연한 실버/화이트)
+textColor = "#E0E0E0"
