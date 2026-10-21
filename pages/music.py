@@ -106,22 +106,26 @@ st.markdown(
         justify-content: center;
         align-items: center;
         position: relative;
+        overflow: hidden;
     }
 
     .cd-label-bar {
         position: absolute;
         width: 100%;
         height: 38px;
-        background: rgba(24, 24, 27, 0.85);
+        background: rgba(24, 24, 27, 0.9);
         border-top: 1px solid #71717a;
         border-bottom: 1px solid #71717a;
         display: flex;
-        justify-content: space-between;
+        justify-content: center;
         align-items: center;
-        padding: 0 12px;
-        color: #e4e4e7;
-        font-size: 11px;
+        padding: 0 10px;
+        color: #ffffff;
+        font-size: 12px;
         font-weight: bold;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .cd-center-hole {
@@ -172,20 +176,30 @@ with main_col_left:
 
     btn_analyze = st.button("🎧 음악 감정 분석하기", use_container_width=True)
 
-def render_turntable(is_fast=False):
+# 턴테이블 렌더링 함수 (입력된 노래 제목을 표시하도록 수정)
+def render_turntable(display_text="MUSIC HUB", is_fast=False):
     mode = "spin-fast" if is_fast else "spin-slow"
     st.markdown(
-        f'<div class="turntable-box"><div class="cd-disc {mode}"><div class="cd-label-bar"><span>MUSIC</span><span>HUB</span></div><div class="cd-center-hole"></div></div></div>',
+        f'<div class="turntable-box">'
+        f'<div class="cd-disc {mode}">'
+        f'<div class="cd-label-bar"><span>{display_text}</span></div>'
+        f'<div class="cd-center-hole"></div>'
+        f'</div>'
+        f'</div>',
         unsafe_allow_html=True,
     )
 
 with main_col_right:
+    # 입력 전이거나 평소에는 입력된 노래 제목(또는 기본 문구)을 표시하며 천천히 회전
+    current_label = song_title if song_title else "MUSIC HUB"
     if not btn_analyze:
-        render_turntable(is_fast=False)
+        render_turntable(display_text=current_label, is_fast=False)
 
 if btn_analyze:
     with main_col_right:
-        render_turntable(is_fast=True)
+        # 버튼을 누르면 입력된 노래 제목과 함께 빠르게 회전
+        active_label = song_title if song_title else "ANALYZING"
+        render_turntable(display_text=active_label, is_fast=True)
 
     if not api_key:
         st.error("Streamlit Secrets에 'GEMINI_API_KEY'가 설정되어 있지 않습니다.")
@@ -232,7 +246,7 @@ if btn_analyze:
 
                 st.divider()
                 st.subheader("🔑 주요 테마 키워드 Top 5")
-                keywords = data.get("keywords", [])
+- keywords = data.get("keywords", [])
                 if keywords:
                     kw_cols = st.columns(len(keywords))
                     for idx, kw in enumerate(keywords):
