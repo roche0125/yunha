@@ -108,7 +108,6 @@ st.markdown(
         width: 170px;
         height: 170px;
         border-radius: 50%;
-        /* CD의 무지개 광택과 LP 그루브 연출 */
         background: 
             radial-gradient(circle at center, transparent 30%, rgba(255, 255, 255, 0.05) 31%, transparent 32%),
             conic-gradient(from 0deg, #27272a, #52525b, #18181b, #a1a1aa, #27272a, #3f3f46, #18181b, #27272a);
@@ -178,4 +177,7 @@ st.caption(
 # Streamlit Secrets에서 API 키 가져오기
 try:
     api_key = st.secrets["GEMINI_API_KEY"]
-except
+except Exception:
+    api_key = None
+
+#
