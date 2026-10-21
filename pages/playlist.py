@@ -74,7 +74,7 @@ if api_key:
         st.warning(f"Gemini API 연결 실패: {e}")
 
 # 2. 메인 화면 구성
-st.title("🎧 나만의 맞춤 플레이리스트 🖤")
+st.title("🎧 My Own Playlist 🖤")
 st.caption("현재 내 기분, 날씨, 상황에 딱 맞는 맞춤형 트랙 리스트를 만들어줄게!")
 
 st.markdown("---")
@@ -83,11 +83,11 @@ st.markdown("---")
 col_left, col_right = st.columns(2)
 
 with col_left:
-    st.subheader("1. 조건 슬라이더 🎚️")
+    st.subheader("1. Condition Slider 🎚️")
     
     # 기분 슬라이더 (1~100)
     mood_score = st.slider(
-        "현재 기분은 어때?",
+        "Feeling",
         min_value=1,
         max_value=100,
         value=50,
@@ -96,7 +96,7 @@ with col_left:
     
     # 날씨 분위기 슬라이더 (1~100)
     weather_score = st.slider(
-        "오늘 날씨 분위기는?",
+        "Weather",
         min_value=1,
         max_value=100,
         value=50,
@@ -105,7 +105,7 @@ with col_left:
     
     # 플레이리스트 길이 (분 단위)
     playlist_length = st.slider(
-        "플레이리스트 길이 (분)",
+        "Length (minute)",
         min_value=15,
         max_value=180,
         value=60,
@@ -118,14 +118,14 @@ with col_right:
     
     # 현재 상황 (단일 선택 버튼 라디오, 선택 안 함 가능)
     situation = st.radio(
-        "현재 어떤 상황이야? (선택 안 해도 돼!)",
-        options=["선택 안 함", "📖 공부/작업", "🏋️ 운동/산책", "☕ 휴식/힐링", "🌙 수면/명상", "🚗 드라이브"],
+        "Situation",
+        options=["선택 안 함", "📖 Study/Work", "🏋️ 운동/산책", "☕ Break/Healing", "🌙 Sleep/명상", "🚗 Drave"],
         index=0
     )
     
     # 선호 장르 (복수 선택 가능 multiselect)
     selected_genres = st.multiselect(
-        "선호하는 장르를 골라줘! (복수 선택 가능)",
+        "Ganre",
         options=["K-Pop", "Pop", "Lofi / Jazz", "Indie / Acoustic", "Hip-Hop / R&B", "EDM / Dance", "Classic / Instrumental", "Rock / Metal"],
         default=[]
     )
@@ -147,7 +147,7 @@ if st.button("✨ 맞춤 플레이리스트 생성하기", type="primary", use_c
     situation_str = situation if situation != "선택 안 함" else "특별한 제한 없음"
     genres_str = ", ".join(selected_genres) if selected_genres else "전 장르 자유"
 
-    st.subheader("🎵 추천 플레이리스트 결과")
+    st.subheader("🎵 Playlist")
 
     # 1. Gemini AI를 활용한 추천
     if client:
