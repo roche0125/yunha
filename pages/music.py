@@ -176,7 +176,7 @@ with main_col_left:
 
     btn_analyze = st.button("🎧 음악 감정 분석하기", use_container_width=True)
 
-# 턴테이블 렌더링 함수 (입력된 노래 제목을 표시하도록 수정)
+# 턴테이블 렌더링 함수
 def render_turntable(display_text="MUSIC HUB", is_fast=False):
     mode = "spin-fast" if is_fast else "spin-slow"
     st.markdown(
@@ -190,14 +190,12 @@ def render_turntable(display_text="MUSIC HUB", is_fast=False):
     )
 
 with main_col_right:
-    # 입력 전이거나 평소에는 입력된 노래 제목(또는 기본 문구)을 표시하며 천천히 회전
     current_label = song_title if song_title else "MUSIC HUB"
     if not btn_analyze:
         render_turntable(display_text=current_label, is_fast=False)
 
 if btn_analyze:
     with main_col_right:
-        # 버튼을 누르면 입력된 노래 제목과 함께 빠르게 회전
         active_label = song_title if song_title else "ANALYZING"
         render_turntable(display_text=active_label, is_fast=True)
 
@@ -246,7 +244,7 @@ if btn_analyze:
 
                 st.divider()
                 st.subheader("🔑 주요 테마 키워드 Top 5")
-- keywords = data.get("keywords", [])
+                keywords = data.get("keywords", [])
                 if keywords:
                     kw_cols = st.columns(len(keywords))
                     for idx, kw in enumerate(keywords):
