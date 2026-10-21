@@ -9,49 +9,93 @@ from google.genai import types
 # 페이지 기본 설정
 st.set_page_config(
     page_title="AI 음악 감정 & 분위기 분석기",
-    page_icon="🎵",
+    page_icon="🖤",
     layout="wide",
 )
 
-# 전체 글씨체 변경 
+# 구름 바탕 폰트 & 블랙&실버 다크 테마 적용 CSS
 st.markdown(
     """
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap');
-    
-    html, body, [class*="css"], div, span, h1, h2, h3, h4, h5, h6, p, label, input, button {
-        font-family: 'Gowun Batang', serif !important;
-        font-size: 20px;
+
+    /* 1. 사이드바 버튼 깨짐 현상(keyboard_double_...) 차단 */
+    [data-testid="stSidebarCollapseButton"] {
+        color: transparent !important;
+    }
+    [data-testid="stSidebarCollapseButton"] button span {
+        font-family: 'Material Symbols Outlined', 'Material Icons' !important;
+        font-size: 0px !important;
     }
 
-    h1 { font-size: 44px !important; }
-    h2 { font-size: 38px !important; }
-    h3 { font-size: 32px !important; }
-    
-    /* 주요 테마 키워드 전용 커스텀 스타일 */
+    /* 2. 전체 앱 배경 (딥 블랙) */
+    .stApp {
+        background-color: #0e0e10;
+        color: #e0e0e0;
+    }
+
+    /* 3. 사이드바 스타일링 */
+    [data-testid="stSidebar"] {
+        background-color: #121214 !important;
+        border-right: 1px solid #27272a !important;
+    }
+    [data-testid="stSidebar"] * {
+        color: #e0e0e0 !important;
+    }
+
+    /* 4. 폰트 적용 (구름 바탕 유지) */
+    html, body, [class*="css"], div, span, h1, h2, h3, h4, h5, h6, p, label, input, button {
+        font-family: 'Gowun Batang', serif !important;
+    }
+
+    h1 { font-size: 42px !important; font-weight: 700; color: #ffffff !important; }
+    h2 { font-size: 32px !important; font-weight: 700; color: #d1d5db !important; }
+    h3 { font-size: 26px !important; font-weight: 700; color: #9ca3af !important; }
+    p, div, label { font-size: 19px; color: #c4c4c4; }
+
+    /* 5. 텍스트 입력창 다크 스타일 */
+    .stTextInput input {
+        background-color: #18181b !important;
+        color: #ffffff !important;
+        border: 1px solid #3f3f46 !important;
+        border-radius: 8px !important;
+    }
+    .stTextInput input:focus {
+        border-color: #c0c0c0 !important;
+        box-shadow: 0 0 8px rgba(192, 192, 192, 0.3) !important;
+    }
+
+    /* 6. 주요 테마 키워드 블랙 & 실버 카스텀 카드 */
     .keyword-card {
-        background-color: #F0F4F8;
-        border-radius: 8px;
-        padding: 8px 12px;
+        background: linear-gradient(145deg, #18181b, #121214);
+        border: 1px solid #3f3f46;
+        border-radius: 10px;
+        padding: 12px 16px;
         text-align: center;
         margin-bottom: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.4);
     }
     .keyword-label {
-        font-size: 15px !important;
-        color: #666666;
-        margin-bottom: 2px;
+        font-size: 14px !important;
+        color: #a1a1aa;
+        margin-bottom: 4px;
     }
     .keyword-value {
         font-size: 20px !important;
         font-weight: bold;
-        color: #1E293B;
+        color: #ffffff;
+    }
+
+    /* 구분선 */
+    hr {
+        border-color: #27272a !important;
     }
     </style>
     """,
     unsafe_allow_html=True,
 )
 
-st.title("🎵 AI 기반 노래 가사 감정 & 분위기 분석기")
+st.title("🖤 음악 감정 & 분위기 분석기")
 st.caption(
     "노래 제목과 가수를 입력하면 AI가 가사 속에 담긴 감정 비율, 분위기, 컬러 팔레트를 분석해 드립니다."
 )
@@ -65,9 +109,9 @@ except Exception:
 # 입력 폼
 col1, col2 = st.columns(2)
 with col1:
-    song_title = st.text_input("노래 제목", placeholder="예: 봄날")
+    song_title = st.text_input("노래 제목", placeholder="예: BLUE")
 with col2:
-    artist = st.text_input("가수 이름", placeholder="예: 방탄소년단")
+    artist = st.text_input("가수 이름", placeholder="예: 윈터")
 
 btn_analyze = st.button("🎧 음악 감정 분석하기", use_container_width=True)
 
@@ -154,7 +198,7 @@ if btn_analyze:
                 # JSON 파싱
                 data = json.loads(response.text)
 
-                st.success("분석이 완료되었습니다! 🎉")
+                st.success("분석이 완료되었습니다 🎧")
                 st.divider()
 
                 # 📌 1. 핵심 주제 요약 및 분위기 컬러 카드
