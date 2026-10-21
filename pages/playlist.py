@@ -55,6 +55,17 @@ p, div, label { font-size: 19px; color: #c4c4c4; }
     border-radius: 8px !important;
 }
 
+/* 메인 버튼(맞춤 플레이리스트 생성하기) 글자 색상 검은색 설정 */
+div.stButton > button {
+    color: #000000 !important;
+    font-weight: bold !important;
+}
+
+div.stButton > button p {
+    color: #000000 !important;
+    font-weight: bold !important;
+}
+
 /* 구분선 */
 hr {
     border-color: #27272a !important;
