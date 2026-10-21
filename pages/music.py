@@ -13,13 +13,13 @@ st.set_page_config(
     layout="wide",
 )
 
-# 구름 바탕 폰트 & 블랙&실버 다크 테마 적용 CSS
+# 구름 바탕 폰트 & 다크 테마 & 턴테이블 회전 애니메이션 CSS
 st.markdown(
     """
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap');
 
-    /* 1. 사이드바 버튼 깨짐 현상(keyboard_double_...) 차단 */
+    /* 1. 사이드바 버튼 깨짐 현상 차단 */
     [data-testid="stSidebarCollapseButton"] {
         color: transparent !important;
     }
@@ -28,7 +28,7 @@ st.markdown(
         font-size: 0px !important;
     }
 
-    /* 2. 전체 앱 배경 (딥 블랙) */
+    /* 2. 전체 앱 배경 */
     .stApp {
         background-color: #0e0e10;
         color: #e0e0e0;
@@ -43,15 +43,15 @@ st.markdown(
         color: #e0e0e0 !important;
     }
 
-    /* 4. 폰트 적용 (구름 바탕 유지) */
+    /* 4. 구름 바탕 폰트 */
     html, body, [class*="css"], div, span, h1, h2, h3, h4, h5, h6, p, label, input, button {
         font-family: 'Gowun Batang', serif !important;
     }
 
-    h1 { font-size: 42px !important; font-weight: 700; color: #ffffff !important; }
-    h2 { font-size: 32px !important; font-weight: 700; color: #d1d5db !important; }
-    h3 { font-size: 26px !important; font-weight: 700; color: #9ca3af !important; }
-    p, div, label { font-size: 19px; color: #c4c4c4; }
+    h1 { font-size: 40px !important; font-weight: 700; color: #ffffff !important; }
+    h2 { font-size: 30px !important; font-weight: 700; color: #d1d5db !important; }
+    h3 { font-size: 24px !important; font-weight: 700; color: #9ca3af !important; }
+    p, div, label { font-size: 18px; color: #c4c4c4; }
 
     /* 5. 텍스트 입력창 다크 스타일 */
     .stTextInput input {
@@ -65,7 +65,7 @@ st.markdown(
         box-shadow: 0 0 8px rgba(192, 192, 192, 0.3) !important;
     }
 
-    /* 6. 주요 테마 키워드 블랙 & 실버 카스텀 카드 */
+    /* 6. 키워드 커스텀 카드 */
     .keyword-card {
         background: linear-gradient(145deg, #18181b, #121214);
         border: 1px solid #3f3f46;
@@ -86,7 +86,58 @@ st.markdown(
         color: #ffffff;
     }
 
-    /* 구분선 */
+    /* 7. 턴테이블 & 회전 CD CSS */
+    .turntable-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #121214;
+        border: 1px solid #27272a;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8), 0 8px 25px rgba(0, 0, 0, 0.5);
+        height: 100%;
+        min-height: 220px;
+    }
+
+    .vinyl-record {
+        width: 170px;
+        height: 170px;
+        border-radius: 50%;
+        background: radial-gradient(circle, #27272a 18%, #09090b 20%, #18181b 40%, #000000 70%, #27272a 100%);
+        border: 4px solid #3f3f46;
+        box-shadow: 0 0 15px rgba(192, 192, 192, 0.15);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+    }
+
+    /* CD 중앙 홀/라벨 */
+    .vinyl-center {
+        width: 55px;
+        height: 55px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #c0c0c0, #52525b);
+        border: 3px solid #000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #000;
+        font-weight: bold;
+        font-size: 12px;
+    }
+
+    /* 회전 애니메이션 클래스 */
+    .spinning {
+        animation: spin 3초 linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
     hr {
         border-color: #27272a !important;
     }
@@ -106,16 +157,42 @@ try:
 except Exception:
     api_key = None
 
-# 입력 폼
-col1, col2 = st.columns(2)
-with col1:
-    song_title = st.text_input("노래 제목", placeholder="예: BLUE")
-with col2:
-    artist = st.text_input("가수 이름", placeholder="예: 윈터")
+# 메인 상단 레이아웃 (왼쪽 50%: 입력 폼 / 오른쪽 50%: 턴테이블 시디)
+main_col_left, main_col_right = st.columns([1, 1])
 
-btn_analyze = st.button("🎧 음악 감정 분석하기", use_container_width=True)
+with main_col_left:
+    col1, col2 = st.columns(2)
+    with col1:
+        song_title = st.text_input("노래 제목", placeholder="예: BLUE")
+    with col2:
+        artist = st.text_input("가수 이름", placeholder="예: 윈터")
+
+    btn_analyze = st.button("🎧 음악 감정 분석하기", use_container_width=True)
+
+# 턴테이블 CD 플레이어 컴포넌트 렌더링 함수
+def render_turntable(is_spinning=False):
+    spin_class = "spinning" if is_spinning else ""
+    st.markdown(
+        f"""
+        <div class="turntable-container">
+            <div class="vinyl-record {spin_class}">
+                <div class="vinyl-center">MUSIC</div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+with main_col_right:
+    # 기본 정지 상태의 턴테이블
+    if not btn_analyze:
+        render_turntable(is_spinning=False)
 
 if btn_analyze:
+    # 버튼이 눌렸을 때는 빙글빙글 회전하는 CD 보여주기
+    with main_col_right:
+        render_turntable(is_spinning=True)
+
     if not api_key:
         st.error(
             "Streamlit Secrets에 'GEMINI_API_KEY'가 설정되어 있지 않습니다. 설정 후 다시 시도해 주세요!"
@@ -127,10 +204,8 @@ if btn_analyze:
             "AI가 노래 가사를 분석하고 정서를 시각화하는 중입니다... 🎼"
         ):
             try:
-                # Gemini Client 생성
                 client = genai.Client(api_key=api_key)
 
-                # 프롬프트 구성 (JSON 형식으로 응답 받기)
                 prompt = f"""
                 다음 노래의 가사와 전체적인 곡 분위기를 정밀 분석해서 반드시 지정된 JSON 규격으로만 응답해줘.
                 
@@ -158,7 +233,6 @@ if btn_analyze:
                 - color_hex는 Hex 컬러 코드 형태로 제공할 것.
                 """
 
-                # 503 과부하 방지: 여러 모델을 순차적으로 시도하는 Fallback 로직
                 response = None
                 models_to_try = [
                     "gemini-3.8-flash",
@@ -195,7 +269,6 @@ if btn_analyze:
                 if response is None and last_exception is not None:
                     raise last_exception
 
-                # JSON 파싱
                 data = json.loads(response.text)
 
                 st.success("분석이 완료되었습니다 🎧")
@@ -226,12 +299,12 @@ if btn_analyze:
 
                 st.divider()
 
-                # 📊 2. 가사 감정 비율 시각화 (세로 막대 그래프)
+                # 📊 2. 가사 감정 비율 시각화
                 st.subheader("📊 감정 구성 비율 (Emotion Analysis)")
                 df_emotions = pd.DataFrame(data.get("emotions", []))
 
                 if not df_emotions.empty:
-                    hex_code = data.get("color_hex", "#3182CE")  # 대표 컬러 가져오기
+                    hex_code = data.get("color_hex", "#3182CE")
                     
                     col_chart, col_data = st.columns([2, 1])
                     with col_chart:
@@ -242,7 +315,6 @@ if btn_analyze:
                             text="ratio",
                             labels={"emotion": "감정 요소", "ratio": "비율 (%)"},
                         )
-                        # 막대 색상을 대표 분위기 컬러(hex_code)로 적용
                         fig.update_traces(
                             texttemplate="%{text}%",
                             textposition="outside",
@@ -290,7 +362,6 @@ if btn_analyze:
                             )
 
             except Exception as e:
-                # 503 과부하 또는 서버 오류 발생 시 친절한 안내 메시지 출력
                 if (
                     "503" in str(e)
                     or "UNAVAILABLE" in str(e)
