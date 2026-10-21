@@ -196,7 +196,8 @@ with main_col_right:
 
 if btn_analyze:
     with main_col_right:
-        active_label = f"ANALYZING: {song_title}" if song_title else "ANALYZING..."
+        # ANALYZING 없이 입력한 노래 제목/가수만 빠르게 회전하도록 변경! 💙
+        active_label = f"{song_title} - {artist}" if (song_title and artist) else (song_title if song_title else "MUSIC HUB")
         render_turntable(display_text=active_label, is_fast=True)
 
     if not api_key:
@@ -226,7 +227,6 @@ if btn_analyze:
                     "}"
                 )
 
-                # 최신 권장 모델인 gemini-3.8-flash로 업데이트 완료!
                 response = client.models.generate_content(
                     model="gemini-3.8-flash",
                     contents=prompt,
