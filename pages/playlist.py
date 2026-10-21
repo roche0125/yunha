@@ -7,19 +7,57 @@ from google import genai
 st.set_page_config(page_title="AI Playlist", page_icon="🎧", layout="wide")
 
 # ----------------------------------------------------
-# Gowun Batang (구름 바탕) 폰트 글로벌 스타일 적용 💙
+# 구름 바탕 폰트 & 블랙&실버 다크 테마 스타일 적용 🖤
 # ----------------------------------------------------
 font_css = """
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap');
 
-html, body, [class*="css"], [class*="st-"] {
+/* 1. 사이드바 버그 텍스트(keyboard_double_...) 차단 */
+[data-testid="stSidebarCollapseButton"] {
+    color: transparent !important;
+}
+[data-testid="stSidebarCollapseButton"] button span {
+    font-family: 'Material Symbols Outlined', 'Material Icons' !important;
+    font-size: 0px !important;
+}
+
+/* 2. 전체 앱 배경 (딥 블랙) */
+.stApp {
+    background-color: #0e0e10;
+    color: #e0e0e0;
+}
+
+/* 3. 사이드바 스타일링 */
+[data-testid="stSidebar"] {
+    background-color: #121214 !important;
+    border-right: 1px solid #27272a !important;
+}
+[data-testid="stSidebar"] * {
+    color: #e0e0e0 !important;
+}
+
+/* 4. 구름 바탕 폰트 글로벌 적용 */
+html, body, [class*="css"], [class*="st-"], div, span, h1, h2, h3, h4, h5, h6, p, label, input, button {
     font-family: 'Gowun Batang', serif !important;
 }
 
-h1, h2, h3, h4, h5, h6, .stMarkdown {
-    font-family: 'Gowun Batang', serif !important;
-    font-weight: 700;
+h1 { font-size: 42px !important; font-weight: 700; color: #ffffff !important; }
+h2 { font-size: 32px !important; font-weight: 700; color: #d1d5db !important; }
+h3 { font-size: 26px !important; font-weight: 700; color: #9ca3af !important; }
+p, div, label { font-size: 19px; color: #c4c4c4; }
+
+/* 5. 입력 컴포넌트(슬라이더, 멀티셀렉트 등) 다크 스타일 */
+.stMultiSelect div[data-baseweb="select"] {
+    background-color: #18181b !important;
+    border: 1px solid #3f3f46 !important;
+    color: #ffffff !important;
+    border-radius: 8px !important;
+}
+
+/* 구분선 */
+hr {
+    border-color: #27272a !important;
 }
 </style>
 """
@@ -36,7 +74,7 @@ if api_key:
         st.warning(f"Gemini API 연결 실패: {e}")
 
 # 2. 메인 화면 구성
-st.title("🎧 나만의 AI 맞춤 플레이리스트 💙")
+st.title("🎧 나만의 맞춤 플레이리스트 🖤")
 st.caption("현재 내 기분, 날씨, 상황에 딱 맞는 맞춤형 트랙 리스트를 만들어줄게!")
 
 st.markdown("---")
