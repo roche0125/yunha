@@ -13,7 +13,7 @@ st.set_page_config(
     layout="wide",
 )
 
-# 구름 바탕 폰트 & 다크 테마 & 턴테이블 회전 애니메이션 CSS
+# 구름 바탕 폰트 & 다크 테마 & 턴테이블 시디 CSS
 st.markdown(
     """
     <style>
@@ -86,54 +86,78 @@ st.markdown(
         color: #ffffff;
     }
 
-    /* 7. 턴테이블 & 회전 CD CSS */
-    .turntable-container {
+    /* 7. 정사각형 턴테이블 카드 박스 */
+    .turntable-box {
+        width: 100%;
+        max-width: 220px;
+        aspect-ratio: 1 / 1;
+        margin: 0 auto;
+        background: linear-gradient(145deg, #18181b, #0e0e10);
+        border: 1px solid #3f3f46;
+        border-radius: 20px;
+        padding: 15px;
         display: flex;
         justify-content: center;
         align-items: center;
-        background: #121214;
-        border: 1px solid #27272a;
-        border-radius: 16px;
-        padding: 20px;
-        box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8), 0 8px 25px rgba(0, 0, 0, 0.5);
-        height: 100%;
-        min-height: 220px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        position: relative;
     }
 
-    .vinyl-record {
+    /* 디테일이 강화된 CD / 바이닐 디자인 */
+    .cd-disc {
         width: 170px;
         height: 170px;
         border-radius: 50%;
-        background: radial-gradient(circle, #27272a 18%, #09090b 20%, #18181b 40%, #000000 70%, #27272a 100%);
-        border: 4px solid #3f3f46;
-        box-shadow: 0 0 15px rgba(192, 192, 192, 0.15);
+        /* CD의 무지개 광택과 LP 그루브 연출 */
+        background: 
+            radial-gradient(circle at center, transparent 30%, rgba(255, 255, 255, 0.05) 31%, transparent 32%),
+            conic-gradient(from 0deg, #27272a, #52525b, #18181b, #a1a1aa, #27272a, #3f3f46, #18181b, #27272a);
+        border: 2px solid #52525b;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.9), 0 0 2px rgba(255, 255, 255, 0.3);
         display: flex;
         justify-content: center;
         align-items: center;
         position: relative;
     }
 
-    /* CD 중앙 홀/라벨 */
-    .vinyl-center {
-        width: 55px;
-        height: 55px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #c0c0c0, #52525b);
-        border: 3px solid #000;
+    /* 회전을 명확하게 보여주는 상단 라벨 패턴 */
+    .cd-label-bar {
+        position: absolute;
+        width: 100%;
+        height: 38px;
+        background: rgba(24, 24, 27, 0.85);
+        border-top: 1px solid #71717a;
+        border-bottom: 1px solid #71717a;
         display: flex;
-        justify-content: center;
+        justify-content: space-between;
         align-items: center;
-        color: #000;
+        padding: 0 12px;
+        color: #e4e4e7;
+        font-size: 11px;
         font-weight: bold;
-        font-size: 12px;
+        letter-spacing: 1px;
     }
 
-    /* 회전 애니메이션 클래스 */
-    .spinning {
-        animation: spin 3초 linear infinite;
+    /* CD 중앙 구멍 */
+    .cd-center-hole {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: #0e0e10;
+        border: 4px solid #a1a1aa;
+        box-shadow: inset 0 0 5px rgba(0,0,0,0.8);
+        z-index: 5;
     }
 
-    @keyframes spin {
+    /* 회전 애니메이션 */
+    .spin-slow {
+        animation: rotateCD 12s linear infinite;
+    }
+    .spin-fast {
+        animation: rotateCD 2s linear infinite;
+    }
+
+    @keyframes rotateCD {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
     }
@@ -154,223 +178,4 @@ st.caption(
 # Streamlit Secrets에서 API 키 가져오기
 try:
     api_key = st.secrets["GEMINI_API_KEY"]
-except Exception:
-    api_key = None
-
-# 메인 상단 레이아웃 (왼쪽 50%: 입력 폼 / 오른쪽 50%: 턴테이블 시디)
-main_col_left, main_col_right = st.columns([1, 1])
-
-with main_col_left:
-    col1, col2 = st.columns(2)
-    with col1:
-        song_title = st.text_input("노래 제목", placeholder="예: BLUE")
-    with col2:
-        artist = st.text_input("가수 이름", placeholder="예: 윈터")
-
-    btn_analyze = st.button("🎧 음악 감정 분석하기", use_container_width=True)
-
-# 턴테이블 CD 플레이어 컴포넌트 렌더링 함수
-def render_turntable(is_spinning=False):
-    spin_class = "spinning" if is_spinning else ""
-    st.markdown(
-        f"""
-        <div class="turntable-container">
-            <div class="vinyl-record {spin_class}">
-                <div class="vinyl-center">MUSIC</div>
-            </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-with main_col_right:
-    # 기본 정지 상태의 턴테이블
-    if not btn_analyze:
-        render_turntable(is_spinning=False)
-
-if btn_analyze:
-    # 버튼이 눌렸을 때는 빙글빙글 회전하는 CD 보여주기
-    with main_col_right:
-        render_turntable(is_spinning=True)
-
-    if not api_key:
-        st.error(
-            "Streamlit Secrets에 'GEMINI_API_KEY'가 설정되어 있지 않습니다. 설정 후 다시 시도해 주세요!"
-        )
-    elif not song_title or not artist:
-        st.warning("노래 제목과 가수 이름을 모두 입력해 주세요.")
-    else:
-        with st.spinner(
-            "AI가 노래 가사를 분석하고 정서를 시각화하는 중입니다... 🎼"
-        ):
-            try:
-                client = genai.Client(api_key=api_key)
-
-                prompt = f"""
-                다음 노래의 가사와 전체적인 곡 분위기를 정밀 분석해서 반드시 지정된 JSON 규격으로만 응답해줘.
-                
-                노래 제목: {song_title}
-                가수: {artist}
-                
-                응답할 JSON 구조:
-                {{
-                    "theme_summary": "이 노래의 전체적인 핵심 주제 및 서사 한 줄 요약",
-                    "emotions": [
-                        {{"emotion": "기쁨/희망", "ratio": 10}},
-                        {{"emotion": "슬픔/그리움", "ratio": 50}},
-                        {{"emotion": "불안/외로움", "ratio": 30}},
-                        {{"emotion": "사랑/설렘", "ratio": 10}}
-                    ],
-                    "keywords": ["키워드1", "키워드2", "키워드3", "키워드4", "키워드5"],
-                    "vibe_color": "이 곡에 어울리는 대표 색상 이름 (예: 새벽녘의 딥블루)",
-                    "color_hex": "#1E3A8A",
-                    "vibe_description": "곡의 분위기와 추천 감상 상황 설명"
-                }}
-                
-                주의사항:
-                - emotions의 ratio(비율) 합은 반드시 100이 되도록 설정할 것.
-                - emotions에는 곡의 특성에 맞는 감정 3~5개를 자유롭게 뽑을 것.
-                - color_hex는 Hex 컬러 코드 형태로 제공할 것.
-                """
-
-                response = None
-                models_to_try = [
-                    "gemini-3.8-flash",
-                    "gemini-2.5-flash",
-                    "gemini-1.5-flash",
-                ]
-                last_exception = None
-
-                for model_name in models_to_try:
-                    for attempt in range(3):
-                        try:
-                            response = client.models.generate_content(
-                                model=model_name,
-                                contents=prompt,
-                                config=types.GenerateContentConfig(
-                                    response_mime_type="application/json",
-                                ),
-                            )
-                            break
-                        except Exception as err:
-                            last_exception = err
-                            if (
-                                "503" in str(err)
-                                or "UNAVAILABLE" in str(err)
-                                or "high demand" in str(err)
-                            ):
-                                time.sleep(2)
-                                continue
-                            else:
-                                raise err
-                    if response is not None:
-                        break
-
-                if response is None and last_exception is not None:
-                    raise last_exception
-
-                data = json.loads(response.text)
-
-                st.success("분석이 완료되었습니다 🎧")
-                st.divider()
-
-                # 📌 1. 핵심 주제 요약 및 분위기 컬러 카드
-                st.subheader("📌 곡 핵심 주제 & 이미지 테마")
-
-                col_info, col_color = st.columns([3, 1])
-                with col_info:
-                    st.info(
-                        f"**주제 요약:** {data.get('theme_summary', '정보 없음')}"
-                    )
-                    st.write(
-                        f"**💡 어울리는 감상 분위기:** {data.get('vibe_description', '')}"
-                    )
-                with col_color:
-                    hex_code = data.get("color_hex", "#3182CE")
-                    color_name = data.get("vibe_color", "추천 컬러")
-                    st.markdown(
-                        f"""
-                        <div style="background-color: {hex_code}; padding: 25px; border-radius: 12px; text-align: center; color: white; font-weight: bold; font-size: 26px;">
-                            대표 분위기 컬러<br><br>{color_name}
-                        </div>
-                        """,
-                        unsafe_allow_html=True,
-                    )
-
-                st.divider()
-
-                # 📊 2. 가사 감정 비율 시각화
-                st.subheader("📊 감정 구성 비율 (Emotion Analysis)")
-                df_emotions = pd.DataFrame(data.get("emotions", []))
-
-                if not df_emotions.empty:
-                    hex_code = data.get("color_hex", "#3182CE")
-                    
-                    col_chart, col_data = st.columns([2, 1])
-                    with col_chart:
-                        fig = px.bar(
-                            df_emotions,
-                            x="emotion",
-                            y="ratio",
-                            text="ratio",
-                            labels={"emotion": "감정 요소", "ratio": "비율 (%)"},
-                        )
-                        fig.update_traces(
-                            texttemplate="%{text}%",
-                            textposition="outside",
-                            marker_color=hex_code,
-                            marker_line_color="rgb(8,48,107)",
-                            marker_line_width=1.5,
-                        )
-                        fig.update_layout(
-                            showlegend=False,
-                            height=350,
-                            xaxis_title=None,
-                            yaxis_title="비율 (%)",
-                            font=dict(family="Gowun Batang, serif", size=18),
-                        )
-                        st.plotly_chart(fig, use_container_width=True)
-
-                    with col_data:
-                        st.dataframe(
-                            df_emotions.rename(
-                                columns={
-                                    "emotion": "감정 요소",
-                                    "ratio": "비율(%)",
-                                }
-                            ),
-                            use_container_width=True,
-                        )
-
-                st.divider()
-
-                # 🔑 3. 주요 가사 테마 키워드 Top 5
-                st.subheader("🔑 가사 속 주요 테마 키워드 Top 5")
-                keywords = data.get("keywords", [])
-                if keywords:
-                    kw_cols = st.columns(len(keywords))
-                    for idx, kw in enumerate(keywords):
-                        with kw_cols[idx]:
-                            st.markdown(
-                                f"""
-                                <div class="keyword-card">
-                                    <div class="keyword-label">Keyword {idx+1}</div>
-                                    <div class="keyword-value"># {kw}</div>
-                                </div>
-                                """,
-                                unsafe_allow_html=True,
-                            )
-
-            except Exception as e:
-                if (
-                    "503" in str(e)
-                    or "UNAVAILABLE" in str(e)
-                    or "high demand" in str(e)
-                ):
-                    st.warning(
-                        "⏳ 현재 AI 서버 사용량이 많아 응답이 지연되고 있습니다. 잠시 후 다시 시도해 주세요! 💙"
-                    )
-                else:
-                    st.error(
-                        "⚠️ 분석 도중 일시적인 오류가 발생했습니다. 잠시 후 다시 시도해 주세요!"
-                    )
+except
