@@ -130,7 +130,7 @@ with col_right:
     # 현재 상황 (단일 선택 버튼 라디오, 선택 안 함 가능)
     situation = st.radio(
         "Situation",
-        options=["선택 안 함", "📖 Study/Work", "🏋️ 운동/산책", "☕ Break/Healing", "🌙 Sleep/명상", "🚗 Drave"],
+        options=["선택 안 함", "📖 Study/Work", "🏋️ Exercise/Walk", "☕ Break/Healing", "🌙 Sleep/Meditation", "🚗 Drive"],
         index=0
     )
     
@@ -184,7 +184,7 @@ if st.button("✨ Make Playlist", type="primary", use_container_width=True):
                     model='gemini-3.8-flash',  # 👈 최신 모델명으로 변경!
                     contents=prompt
                 )
-                st.success("너만을 위한 플레이리스트 완성! 💙")
+                st.success("Mission Complete! 💙")
                 st.markdown(response.text)
             except Exception as e:
                 err_msg = str(e)
