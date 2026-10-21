@@ -13,7 +13,7 @@ st.set_page_config(
     layout="wide",
 )
 
-# 다크 테마 및 턴테이블 스타일 주입
+# 다크 테마 및 원형 텍스트 턴테이블 스타일 주입
 st.markdown(
     """
     <style>
@@ -109,35 +109,30 @@ st.markdown(
         overflow: hidden;
     }
 
-    /* 📌 글자가 중앙 구멍에 안 가리도록 위아래로 살짝 비껴 배치하거나 폰트 크기 조절 */
-    .cd-label-bar {
+    /* 📌 원형 경로 글자 배치를 위한 SVG 스타일 */
+    .cd-text-svg {
         position: absolute;
         width: 100%;
-        height: 30px;
-        background: rgba(24, 24, 27, 0.95);
-        border-top: 1px solid #71717a;
-        border-bottom: 1px solid #71717a;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 0 8px;
-        color: #ffffff;
+        height: 100%;
+        animation: inherit;
+    }
+
+    .cd-curved-text {
+        fill: #e4e4e7;
         font-size: 11px;
         font-weight: bold;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        top: 35px; /* 중앙 구멍 위쪽으로 라벨 위치를 살짝 올려서 구멍과 안 겹치게 조정! */
+        letter-spacing: 2px;
+        font-family: 'Gowun Batang', serif;
     }
 
     .cd-center-hole {
-        width: 26px;
-        height: 26px;
+        width: 32px;
+        height: 32px;
         border-radius: 50%;
         background: #0e0e10;
         border: 4px solid #a1a1aa;
         position: absolute;
-        z-index: 10;
+        z-index: 5;
     }
 
     .spin-slow {
@@ -179,13 +174,19 @@ with main_col_left:
 
     btn_analyze = st.button("🎧 음악 감정 분석하기", use_container_width=True)
 
-# 턴테이블 렌더링 함수
-def render_turntable(display_text="MUSIC HUB", is_fast=False):
+# 턴테이블 렌더링 함수 (SVG 원형 텍스트 경로 적용)
+def render_turntable(display_text="MUSIC HUB * STREAMLIT *", is_fast=False):
     mode = "spin-fast" if is_fast else "spin-slow"
+    # SVG path를 활용해 글자를 둥글게 배치
     st.markdown(
         f'<div class="turntable-box">'
         f'<div class="cd-disc {mode}">'
-        f'<div class="cd-label-bar"><span>{display_text}</span></div>'
+        f'<svg class="cd-text-svg" viewBox="0 0 170 170">'
+        f'  <path id="textPath" d="M 22,85 A 63,63 0 1,1 148,85 A 63,63 0 1,1 22,85" fill="none" />'
+        f'  <text class="cd-curved-text">'
+        f'    <textPath href="#textPath" startOffset="50%" text-anchor="middle">{display_text}  •  </textPath>'
+        f'  </text>'
+        f'</svg>'
         f'<div class="cd-center-hole"></div>'
         f'</div>'
         f'</div>',
@@ -193,13 +194,13 @@ def render_turntable(display_text="MUSIC HUB", is_fast=False):
     )
 
 with main_col_right:
-    current_label = song_title if song_title else "MUSIC HUB"
+    current_label = f"{song_title} - {artist}" if (song_title and artist) else (song_title if song_title else "MUSIC HUB")
     if not btn_analyze:
         render_turntable(display_text=current_label, is_fast=False)
 
 if btn_analyze:
     with main_col_right:
-        active_label = song_title if song_title else "ANALYZING"
+        active_label = f"ANALYZING: {song_title}" if song_title else "ANALYZING..."
         render_turntable(display_text=active_label, is_fast=True)
 
     if not api_key:
@@ -251,8 +252,4 @@ if btn_analyze:
                 if keywords:
                     kw_cols = st.columns(len(keywords))
                     for idx, kw in enumerate(keywords):
-                        with kw_cols[idx]:
-                            st.markdown(f'<div class="keyword-card"><div class="keyword-label">Keyword {idx+1}</div><div class="keyword-value"># {kw}</div></div>', unsafe_allow_html=True)
-
-            except Exception as e:
-                st.error(f"⚠️ 오류가 발생했습니다: {e}")
+                        with kw_cols
