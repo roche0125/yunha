@@ -109,12 +109,10 @@ st.markdown(
         overflow: hidden;
     }
 
-    /* 📌 원형 경로 글자 배치를 위한 SVG 스타일 */
     .cd-text-svg {
         position: absolute;
         width: 100%;
         height: 100%;
-        animation: inherit;
     }
 
     .cd-curved-text {
@@ -174,82 +172,22 @@ with main_col_left:
 
     btn_analyze = st.button("🎧 음악 감정 분석하기", use_container_width=True)
 
-# 턴테이블 렌더링 함수 (SVG 원형 텍스트 경로 적용)
 def render_turntable(display_text="MUSIC HUB * STREAMLIT *", is_fast=False):
     mode = "spin-fast" if is_fast else "spin-slow"
-    # SVG path를 활용해 글자를 둥글게 배치
-    st.markdown(
-        f'<div class="turntable-box">'
-        f'<div class="cd-disc {mode}">'
-        f'<svg class="cd-text-svg" viewBox="0 0 170 170">'
-        f'  <path id="textPath" d="M 22,85 A 63,63 0 1,1 148,85 A 63,63 0 1,1 22,85" fill="none" />'
-        f'  <text class="cd-curved-text">'
-        f'    <textPath href="#textPath" startOffset="50%" text-anchor="middle">{display_text}  •  </textPath>'
-        f'  </text>'
-        f'</svg>'
-        f'<div class="cd-center-hole"></div>'
-        f'</div>'
-        f'</div>',
-        unsafe_allow_html=True,
-    )
+    html_code = f"""
+    <div class="turntable-box">
+        <div class="cd-disc {mode}">
+            <svg class="cd-text-svg" viewBox="0 0 170 170">
+              <path id="textPath" d="M 22,85 A 63,63 0 1,1 148,85 A 63,63 0 1,1 22,85" fill="none" />
+              <text class="cd-curved-text">
+                <textPath href="#textPath" startOffset="50%" text-anchor="middle">{display_text}  •  </textPath>
+              </text>
+            </svg>
+            <div class="cd-center-hole"></div>
+        </div>
+    </div>
+    """
+    st.markdown(html_code, unsafe_allow_html=True)
 
 with main_col_right:
-    current_label = f"{song_title} - {artist}" if (song_title and artist) else (song_title if song_title else "MUSIC HUB")
-    if not btn_analyze:
-        render_turntable(display_text=current_label, is_fast=False)
-
-if btn_analyze:
-    with main_col_right:
-        active_label = f"ANALYZING: {song_title}" if song_title else "ANALYZING..."
-        render_turntable(display_text=active_label, is_fast=True)
-
-    if not api_key:
-        st.error("Streamlit Secrets에 'GEMINI_API_KEY'가 설정되어 있지 않습니다.")
-    elif not song_title or not artist:
-        st.warning("노래 제목과 가수 이름을 모두 입력해 주세요.")
-    else:
-        with st.spinner("AI가 노래 가사를 분석하고 정서를 시각화하는 중입니다... 🎼"):
-            try:
-                client = genai.Client(api_key=api_key)
-                prompt = f"다음 노래의 가사와 전체적인 곡 분위기를 정밀 분석해서 반드시 지정된 JSON 규격으로만 응답해줘.\n\n노래 제목: {song_title}\n가수: {artist}\n\n응답할 JSON 구조:\n{{\n    \"theme_summary\": \"한 줄 요약\",\n    \"emotions\": [\n        {{\"emotion\": \"기쁨\", \"ratio\": 50}},\n        {{\"emotion\": \"슬픔\", \"ratio\": 50}}\n    ],\n    \"keywords\": [\"키워드1\", \"키워드2\", \"키워드3\", \"키워드4\", \"키워드5\"],\n    \"vibe_color\": \"대표 색상 이름\",\n    \"color_hex\": \"#1E3A8A\",\n    \"vibe_description\": \"설명\"\n}}"
-
-                response = client.models.generate_content(
-                    model="gemini-2.5-flash",
-                    contents=prompt,
-                    config=types.GenerateContentConfig(response_mime_type="application/json"),
-                )
-
-                data = json.loads(response.text)
-
-                st.success("분석이 완료되었습니다 🎧")
-                st.divider()
-
-                st.subheader("📌 곡 핵심 주제 & 이미지 테마")
-                col_info, col_color = st.columns([3, 1])
-                with col_info:
-                    st.info(f"**주제 요약:** {data.get('theme_summary', '')}")
-                    st.write(f"**💡 감상 분위기:** {data.get('vibe_description', '')}")
-                with col_color:
-                    hex_code = data.get("color_hex", "#3182CE")
-                    color_name = data.get("vibe_color", "컬러")
-                    st.markdown(
-                        f'<div style="background-color: {hex_code}; padding: 20px; border-radius: 12px; text-align: center; color: white; font-weight: bold;">대표 컬러<br><br>{color_name}</div>',
-                        unsafe_allow_html=True,
-                    )
-
-                st.divider()
-                st.subheader("📊 감정 구성 비율")
-                df_emotions = pd.DataFrame(data.get("emotions", []))
-                if not df_emotions.empty:
-                    fig = px.bar(df_emotions, x="emotion", y="ratio", text="ratio")
-                    fig.update_traces(marker_color=data.get("color_hex", "#3182CE"), textposition="outside")
-                    fig.update_layout(height=350, paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#e0e0e0"))
-                    st.plotly_chart(fig, use_container_width=True)
-
-                st.divider()
-                st.subheader("🔑 주요 테마 키워드 Top 5")
-                keywords = data.get("keywords", [])
-                if keywords:
-                    kw_cols = st.columns(len(keywords))
-                    for idx, kw in enumerate(keywords):
-                        with kw_cols
+    current
