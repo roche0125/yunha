@@ -13,7 +13,7 @@ st.set_page_config(
     layout="wide",
 )
 
-# 다크 테마 및 원형 텍스트 턴테이블 스타일 주입
+# 다크 테마 및 원형 턴테이블 스타일 주입
 st.markdown(
     """
     <style>
@@ -226,8 +226,9 @@ if btn_analyze:
                     "}"
                 )
 
+                # 최신 권장 모델인 gemini-3.8-flash로 업데이트 완료!
                 response = client.models.generate_content(
-                    model="gemini-2.5-flash",
+                    model="gemini-3.8-flash",
                     contents=prompt,
                     config=types.GenerateContentConfig(response_mime_type="application/json"),
                 )
