@@ -109,32 +109,35 @@ st.markdown(
         overflow: hidden;
     }
 
+    /* 📌 글자가 중앙 구멍에 안 가리도록 위아래로 살짝 비껴 배치하거나 폰트 크기 조절 */
     .cd-label-bar {
         position: absolute;
         width: 100%;
-        height: 38px;
-        background: rgba(24, 24, 27, 0.9);
+        height: 30px;
+        background: rgba(24, 24, 27, 0.95);
         border-top: 1px solid #71717a;
         border-bottom: 1px solid #71717a;
         display: flex;
         justify-content: center;
         align-items: center;
-        padding: 0 10px;
+        padding: 0 8px;
         color: #ffffff;
-        font-size: 12px;
+        font-size: 11px;
         font-weight: bold;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        top: 35px; /* 중앙 구멍 위쪽으로 라벨 위치를 살짝 올려서 구멍과 안 겹치게 조정! */
     }
 
     .cd-center-hole {
-        width: 28px;
-        height: 28px;
+        width: 26px;
+        height: 26px;
         border-radius: 50%;
         background: #0e0e10;
         border: 4px solid #a1a1aa;
-        z-index: 5;
+        position: absolute;
+        z-index: 10;
     }
 
     .spin-slow {
