@@ -92,4 +92,70 @@ st.markdown(
         max-width: 220px;
         aspect-ratio: 1 / 1;
         margin: 0 auto;
-        background: linear-gradient(145deg, #18
+        background: linear-gradient(145deg, #18181b, #0e0e10);
+        border: 1px solid #3f3f46;
+        border-radius: 20px;
+        padding: 15px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        position: relative;
+    }
+
+    /* 디테일이 강화된 CD / 바이닐 디자인 */
+    .cd-disc {
+        width: 170px;
+        height: 170px;
+        border-radius: 50%;
+        background: 
+            radial-gradient(circle at center, transparent 30%, rgba(255, 255, 255, 0.05) 31%, transparent 32%),
+            conic-gradient(from 0deg, #27272a, #52525b, #18181b, #a1a1aa, #27272a, #3f3f46, #18181b, #27272a);
+        border: 2px solid #52525b;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.9), 0 0 2px rgba(255, 255, 255, 0.3);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+    }
+
+    /* 회전을 명확하게 보여주는 상단 라벨 패턴 */
+    .cd-label-bar {
+        position: absolute;
+        width: 100%;
+        height: 38px;
+        background: rgba(24, 24, 27, 0.85);
+        border-top: 1px solid #71717a;
+        border-bottom: 1px solid #71717a;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 12px;
+        color: #e4e4e7;
+        font-size: 11px;
+        font-weight: bold;
+        letter-spacing: 1px;
+    }
+
+    /* CD 중앙 구멍 */
+    .cd-center-hole {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: #0e0e10;
+        border: 4px solid #a1a1aa;
+        box-shadow: inset 0 0 5px rgba(0,0,0,0.8);
+        z-index: 5;
+    }
+
+    /* 회전 애니메이션 */
+    .spin-slow {
+        animation: rotateCD 12s linear infinite;
+    }
+    .spin-fast {
+        animation: rotateCD 2s linear infinite;
+    }
+
+    @keyframes rotateCD {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(36
