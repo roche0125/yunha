@@ -125,7 +125,7 @@ with col_left:
     )
 
 with col_right:
-    st.subheader("2. 상황 & 선호 장르 🎯")
+    st.subheader("2. Situation & Ganre 🎯")
     
     # 현재 상황 (단일 선택 버튼 라디오, 선택 안 함 가능)
     situation = st.radio(
@@ -144,7 +144,7 @@ with col_right:
 st.markdown("---")
 
 # 4. 추천 생성 버튼 & 실행 로직
-if st.button("✨ 맞춤 플레이리스트 생성하기", type="primary", use_container_width=True):
+if st.button("✨ Make Playlist", type="primary", use_container_width=True):
     
     # 조건 정리
     mood_desc = "평범함"
