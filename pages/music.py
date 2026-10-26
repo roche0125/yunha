@@ -170,9 +170,6 @@ with main_col_left:
     with col2:
         artist = st.text_input("Singer", placeholder="예: Winter")
 
-    # 🔗 유튜브 링크 입력 칸 추가!
-    youtube_url = st.text_input("YouTube URL (Optional)", placeholder="예: https://www.youtube.com/watch?v=...")
-
     btn_analyze = st.button("🎧 Decode Mood", use_container_width=True)
 
 def render_turntable(display_text="MUSIC HUB * STREAMLIT *", is_fast=False):
