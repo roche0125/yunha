@@ -72,15 +72,14 @@ st.markdown(
         line-height: 1.6;
     }
 
-    /* 🕺 춤추는 애니메이션 박스 스타일 (상대 위치 설정) */
+    /* 🎵 중앙 하단 음표 박스 스타일 */
     .dancing-box {
-        position: relative;
         display: flex;
         justify-content: center;
         align-items: center;
         gap: 15px;
         margin-top: 40px;
-        padding: 30px 20px;
+        padding: 20px;
         background: linear-gradient(145deg, #141416, #0e0e10);
         border: 1px solid #27272a;
         border-radius: 16px;
@@ -102,20 +101,34 @@ st.markdown(
         100% { transform: translateY(-10px) scale(1.1); opacity: 1; }
     }
 
-    /* 💃 애니메이션 박스의 우측 하단 구석에 배치된 하얀 춤추는 사람 */
-    .box-corner-dancer {
-        position: absolute;
-        bottom: 8px;
-        right: 16px;
-        font-size: 22px;
-        color: #ffffff;
-        animation: dancePerson 0.8s infinite alternate ease-in-out;
-        filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.7));
+    /* ✨ 우측 하단 빈 공간에 하얗게 빛나는 춤추는 사람 스타일 */
+    .glowing-dancer-wrapper {
+        position: fixed;
+        bottom: 35px;
+        right: 45px;
+        z-index: 999;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, rgba(0, 0, 0, 0) 70%);
+        padding: 15px;
+        border-radius: 50%;
+        animation: floatAndGlow 1.5s infinite alternate ease-in-out;
     }
 
-    @keyframes dancePerson {
-        0% { transform: translateY(0px) rotate(-8deg) scale(0.95); }
-        100% { transform: translateY(-8px) rotate(8deg) scale(1.1); }
+    .glowing-dancer {
+        width: 42px;
+        height: 42px;
+        fill: #ffffff;
+        filter: drop-shadow(0 0 10px #ffffff) drop-shadow(0 0 22px rgba(255, 255, 255, 0.7));
+        animation: danceMotion 0.8s infinite alternate ease-in-out;
+    }
+
+    @keyframes floatAndGlow {
+        0% { transform: translateY(0px); filter: brightness(1); }
+        100% { transform: translateY(-8px); filter: brightness(1.25); }
+    }
+
+    @keyframes danceMotion {
+        0% { transform: rotate(-8deg) scale(0.95); }
+        100% { transform: rotate(8deg) scale(1.05); }
     }
 
     /* 구분선 스타일 */
@@ -149,7 +162,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# 🕺 박스 내부 우측 하단 구석에 하얀색 춤추는 사람이 들어간 애니메이션 🖤
+# 🎵 하단 중앙 음표 애니메이션 박스
 st.markdown(
     """
     <div class="dancing-box">
@@ -157,7 +170,19 @@ st.markdown(
         <span class="dancing-note">🖤</span>
         <span class="dancing-note">🎶</span>
         <span class="dancing-note">🍸</span>
-        <span class="box-corner-dancer">🕺</span>
+        <span class="dancing-note">💿</span>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+# ✨ 사진 속 빨간 동그라미 위치(우측 하단 빈 공간)에 하얗게 빛나는 춤추는 사람 🖤
+st.markdown(
+    """
+    <div class="glowing-dancer-wrapper">
+        <svg class="glowing-dancer" viewBox="0 0 24 24">
+            <path d="M12,2A2,2 0 0,1 14,4A2,2 0 0,1 12,6A2,2 0 0,1 10,4A2,2 0 0,1 12,2M10.5,7H13.5A2,2 0 0,1 15.5,9V14.5H14V22H12.5V16H11.5V22H10V14.5H8.5V9A2,2 0 0,1 10.5,7M7,8H9V10H7V8M15,8H17V10H15V8Z" />
+        </svg>
     </div>
     """,
     unsafe_allow_html=True,
