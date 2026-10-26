@@ -153,8 +153,8 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-st.title("🖤 음악 감정 & 분위기 분석기")
-st.caption("노래 제목과 가수를 입력하면 AI가 가사 속에 담긴 감정 비율, 분위기, 컬러 팔레트를 분석해 드립니다.")
+st.title("🖤 Sound Palette")
+st.caption("가사 속 감정 레이어와 바이브, 컬러 톤을 분석해드립니다.")
 
 try:
     api_key = st.secrets["GEMINI_API_KEY"]
@@ -166,11 +166,11 @@ main_col_left, main_col_right = st.columns([7, 5])
 with main_col_left:
     col1, col2 = st.columns(2)
     with col1:
-        song_title = st.text_input("노래 제목", placeholder="예: BLUE")
+        song_title = st.text_input("Title", placeholder="예: BLUE")
     with col2:
-        artist = st.text_input("가수 이름", placeholder="예: 윈터")
+        artist = st.text_input("Singer", placeholder="예: Winter")
 
-    btn_analyze = st.button("🎧 음악 감정 분석하기", use_container_width=True)
+    btn_analyze = st.button("🎧 Decode Mood", use_container_width=True)
 
 def render_turntable(display_text="MUSIC HUB * STREAMLIT *", is_fast=False):
     mode = "spin-fast" if is_fast else "spin-slow"
@@ -205,7 +205,7 @@ if btn_analyze:
     elif not song_title or not artist:
         st.warning("노래 제목과 가수 이름을 모두 입력해 주세요.")
     else:
-        with st.spinner("AI가 노래 가사를 분석하고 정서를 시각화하는 중입니다... 🎼"):
+        with st.spinner("Analyzing lyrical emotions and rendering the visual palette... 🎼"):
             try:
                 client = genai.Client(api_key=api_key)
                 
@@ -235,24 +235,24 @@ if btn_analyze:
 
                 data = json.loads(response.text)
 
-                st.success("분석이 완료되었습니다 🎧")
+                st.success("Decode Coomplete 🎧")
                 st.divider()
 
-                st.subheader("📌 곡 핵심 주제 & 이미지 테마")
+                st.subheader("📌 Subject & Theme")
                 col_info, col_color = st.columns([3, 1])
                 with col_info:
-                    st.info(f"**주제 요약:** {data.get('theme_summary', '')}")
-                    st.write(f"**💡 감상 분위기:** {data.get('vibe_description', '')}")
+                    st.info(f"**Summary:** {data.get('theme_summary', '')}")
+                    st.write(f"**💡 Vibe:** {data.get('vibe_description', '')}")
                 with col_color:
                     hex_code = data.get("color_hex", "#3182CE")
-                    color_name = data.get("vibe_color", "컬러")
+                    color_name = data.get("vibe_color", "Color")
                     st.markdown(
                         f'<div style="background-color: {hex_code}; padding: 20px; border-radius: 12px; text-align: center; color: white; font-weight: bold;">대표 컬러<br><br>{color_name}</div>',
                         unsafe_allow_html=True,
                     )
 
                 st.divider()
-                st.subheader("📊 감정 구성 비율")
+                st.subheader("📊 Emotion Ratio")
                 df_emotions = pd.DataFrame(data.get("emotions", []))
                 if not df_emotions.empty:
                     fig = px.bar(df_emotions, x="emotion", y="ratio", text="ratio")
@@ -261,7 +261,7 @@ if btn_analyze:
                     st.plotly_chart(fig, use_container_width=True)
 
                 st.divider()
-                st.subheader("🔑 주요 테마 키워드 Top 5")
+                st.subheader("🔑 Keywords Top 5")
                 keywords = data.get("keywords", [])
                 if keywords:
                     kw_cols = st.columns(len(keywords))
