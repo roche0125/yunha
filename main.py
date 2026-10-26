@@ -101,13 +101,13 @@ st.markdown(
         100% { transform: translateY(-10px) scale(1.1); opacity: 1; }
     }
 
-    /* 💃 우측 하단 몽환적으로 춤추는 드레스 실루엣 애니메이션 🤍 */
+    /* 💃 우측 하단 리얼한 인체 라인 & 드레스 흩날림 애니메이션 🤍 */
     .dancer-container {
         position: fixed;
-        bottom: 25px;
-        right: 35px;
-        width: 130px;
-        height: 160px;
+        bottom: 20px;
+        right: 30px;
+        width: 150px;
+        height: 180px;
         z-index: 999;
         pointer-events: none;
         display: flex;
@@ -117,103 +117,114 @@ st.markdown(
 
     .dancer-glow {
         position: absolute;
-        width: 110px;
-        height: 110px;
-        background: radial-gradient(circle, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.05) 45%, rgba(0, 0, 0, 0) 70%);
+        width: 130px;
+        height: 130px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.06) 45%, rgba(0, 0, 0, 0) 75%);
         border-radius: 50%;
         animation: glowPulse 2s infinite alternate ease-in-out;
     }
 
-    .silhouette-svg {
-        width: 100px;
-        height: 140px;
+    .realistic-dancer-svg {
+        width: 120px;
+        height: 160px;
         position: relative;
         z-index: 2;
-        filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 25px rgba(255, 255, 255, 0.4));
-        animation: bodyTurn 3s infinite alternate ease-in-out;
+        filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 25px rgba(255, 255, 255, 0.45));
+        animation: bodySway 2.5s infinite alternate ease-in-out;
     }
 
-    /* 드레스 스커트 흩날림 애니메이션 */
-    .dress-skirt {
-        fill: rgba(255, 255, 255, 0.85);
-        transform-origin: 50px 55px;
-        animation: skirtWave 1.8s infinite alternate ease-in-out;
+    /* 우아한 몸통 실루엣 */
+    .body-shape {
+        fill: #ffffff;
+        transform-origin: 60px 50px;
     }
 
-    /* 왼팔 움직임 */
-    .left-arm {
+    /* 흩날리는 풍성한 드레스 스커트 */
+    .flowing-dress {
+        fill: rgba(255, 255, 255, 0.9);
+        transform-origin: 60px 65px;
+        animation: dressWave 1.6s infinite alternate ease-in-out;
+    }
+
+    /* 우아한 팔 움직임 */
+    .arm-left {
+        fill: none;
         stroke: #ffffff;
-        stroke-width: 3.5;
+        stroke-width: 4;
         stroke-linecap: round;
-        transform-origin: 45px 30px;
-        animation: armLeftMove 2.2s infinite alternate ease-in-out;
+        stroke-linejoin: round;
+        transform-origin: 55px 35px;
+        animation: armLeftMotion 2s infinite alternate ease-in-out;
     }
 
-    /* 오른팔 움직임 */
-    .right-arm {
+    .arm-right {
+        fill: none;
         stroke: #ffffff;
-        stroke-width: 3.5;
+        stroke-width: 4;
         stroke-linecap: round;
-        transform-origin: 55px 30px;
-        animation: armRightMove 2.2s infinite alternate ease-in-out;
+        stroke-linejoin: round;
+        transform-origin: 65px 35px;
+        animation: armRightMotion 2s infinite alternate ease-in-out;
     }
 
-    /* 다리 동작 */
+    /* 다리 움직임 */
     .leg-left {
+        fill: none;
         stroke: #ffffff;
-        stroke-width: 3;
+        stroke-width: 3.5;
         stroke-linecap: round;
-        transform-origin: 46px 85px;
-        animation: legLeftMove 2s infinite alternate ease-in-out;
+        transform-origin: 55px 95px;
+        animation: legLeftMotion 1.8s infinite alternate ease-in-out;
     }
 
     .leg-right {
+        fill: none;
         stroke: #ffffff;
-        stroke-width: 3;
+        stroke-width: 3.5;
         stroke-linecap: round;
-        transform-origin: 54px 85px;
-        animation: legRightMove 2s infinite alternate ease-in-out;
+        transform-origin: 65px 95px;
+        animation: legRightMotion 1.8s infinite alternate ease-in-out;
     }
 
-    @keyframes bodyTurn {
-        0% { transform: translateY(0px) rotate(-6deg); }
-        50% { transform: translateY(-8px) rotate(4deg) scale(1.03); }
-        100% { transform: translateY(-2px) rotate(8deg); }
+    @keyframes bodySway {
+        0% { transform: translateY(0px) rotate(-4deg) scale(0.98); }
+        50% { transform: translateY(-8px) rotate(4deg) scale(1.02); }
+        100% { transform: translateY(-3px) rotate(6deg) scale(1); }
     }
 
-    @keyframes skirtWave {
-        0% { transform: rotate(-8deg) skewX(-10deg) scaleX(0.95); }
-        50% { transform: rotate(10deg) skewX(12deg) scaleX(1.1); }
-        100% { transform: rotate(-5deg) skewX(-6deg) scaleX(1.02); }
+    @keyframes dressWave {
+        0% { transform: rotate(-6deg) skewX(-12deg) scaleX(0.95); }
+        50% { transform: rotate(8deg) skewX(15deg) scaleX(1.12); }
+        100% { transform: rotate(-4deg) skewX(-8deg) scaleX(1.02); }
     }
 
-    @keyframes armLeftMove {
+    @keyframes armLeftMotion {
         0% { transform: rotate(0deg); }
-        50% { transform: rotate(-35deg) translateY(-5px); }
+        50% { transform: rotate(-25deg) translateY(-3px); }
         100% { transform: rotate(15deg); }
     }
 
-    @keyframes armRightMove {
+    @keyframes armRightMotion {
         0% { transform: rotate(0deg); }
-        50% { transform: rotate(40deg) translateY(-4px); }
-        100% { transform: rotate(-20deg); }
+        50% { transform: rotate(30deg) translateY(-3px); }
+        100% { transform: rotate(-15deg); }
     }
 
-    @keyframes legLeftMove {
+    @keyframes legLeftMotion {
         0% { transform: rotate(0deg); }
-        50% { transform: rotate(15deg); }
-        100% { transform: rotate(-10deg); }
+        50% { transform: rotate(12deg); }
+        100% { transform: rotate(-8deg); }
     }
 
-    @keyframes legRightMove {
+    @keyframes legRightMotion {
         0% { transform: rotate(0deg); }
-        50% { transform: rotate(-20deg); }
-        100% { transform: rotate(12deg); }
+        50% { transform: rotate(-15deg); }
+        100% { transform: rotate(10deg); }
     }
 
     @keyframes glowPulse {
-        0% { opacity: 0.4; transform: scale(0.9); }
-        100% { opacity: 0.9; transform: scale(1.2); }
+        0% { opacity: 0.5; transform: scale(0.95); }
+        100% { opacity: 1; transform: scale(1.25); }
     }
 
     /* 구분선 스타일 */
@@ -261,28 +272,11 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# 💃 우측 하단 몽환적 드레스 실루엣 춤추는 애니메이션 (팔/다리/드레스 유기적 움직임)
+# 💃 우측 하단 리얼한 인체 곡선 & 드레스 실루엣 춤추는 애니메이션
 st.markdown(
     """
     <div class="dancer-container">
         <div class="dancer-glow"></div>
-        <svg class="silhouette-svg" viewBox="0 0 100 140">
-            <!-- 머리 -->
-            <circle cx="50" cy="20" r="7" fill="#ffffff" />
-            <!-- 상체 -->
-            <path d="M46 27 C46 27, 50 25, 54 27 C55 35, 53 45, 50 55 C47 45, 45 35, 46 27 Z" fill="#ffffff" />
-            <!-- 왼팔 -->
-            <path class="left-arm" d="M45 28 C35 32, 25 25, 18 18" fill="none" />
-            <!-- 오른팔 -->
-            <path class="right-arm" d="M55 28 C68 25, 78 35, 85 45" fill="none" />
-            <!-- 흩날리는 드레스 스커트 -->
-            <path class="dress-skirt" d="M50 50 C40 60, 20 85, 15 105 C35 110, 65 110, 85 100 C80 80, 60 60, 50 50 Z" />
-            <!-- 왼다리 -->
-            <path class="leg-left" d="M44 95 L38 130" fill="none" />
-            <!-- 오른다리 -->
-            <path class="leg-right" d="M56 95 L65 128" fill="none" />
-        </svg>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
+        <svg class="realistic-dancer-svg" viewBox="0 0 120 160">
+            <!-- 머리 & 목 (부드러운 곡선) -->
+            <path class="body-shape" d="M57 15 C53 15 50 18 50 22 C50 26 53 29 57
