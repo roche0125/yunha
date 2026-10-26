@@ -9,7 +9,7 @@ st.set_page_config(page_title="AI Playlist", page_icon="🎧", layout="wide")
 
 font_css = """
 <style>
-@import url('[https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap](https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap)');
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap');
 
 [data-testid="stSidebarCollapseButton"] {
     color: transparent !important;
@@ -216,36 +216,4 @@ if generate_clicked:
             - 날씨 분위기: {weather_score}/100 ({weather_desc})
             - 총 플레이리스트 길이: 약 {playlist_length}분
             - 현재 상황: {situation_str}
-            - 선호 장르: {genres_str}
-            
-            [출력 형식]
-            ### 💿 [플레이리스트 제목]
-            - 선곡 이유 요약 (2~3줄)
-            
-            그리고 각 곡은 아래 형식으로 정확히 5곡 이상 작성해줘:
-            1. **곡명** - 아티스트 (추천 이유 한 줄)
-            """
-            
-            max_retries = 3
-            response = None
-            for attempt in range(max_retries):
-                try:
-                    response = client.models.generate_content(
-                        model='gemini-2.0-flash',
-                        contents=prompt
-                    )
-                    break
-                except Exception as api_err:
-                    err_str = str(api_err)
-                    if "503" in err_str or "UNAVAILABLE" in err_str or "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
-                        if attempt < max_retries - 1:
-                            time.sleep(3)
-                            continue
-                    raise api_err
-
-            st.success("Build Complete 🖤")
-            
-            response_text = response.text
-            lines = response_text.split("\n")
-            
-            for line in lines:
+            - 선호 장
