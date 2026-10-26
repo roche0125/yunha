@@ -269,4 +269,18 @@ st.markdown(
 
 # 우측 하단 리얼한 인체 곡선 & 드레스 실루엣 춤추는 애니메이션
 dancer_html = """
-<div class="dancer
+<div class="dancer-container">
+    <div class="dancer-glow"></div>
+    <svg class="realistic-dancer-svg" viewBox="0 0 120 160">
+        <path class="body-shape" d="M57 15 C53 15 50 18 50 22 C50 26 53 29 57 29 C61 29 64 26 64 22 C64 18 61 15 57 15 Z" />
+        <path d="M55 29 L55 35 L61 35 L61 29 Z" fill="#ffffff" />
+        <path class="body-shape" d="M48 37 C45 37 42 42 45 48 C48 54 53 58 58 63 C63 58 68 54 71 48 C74 42 71 37 68 37 C64 37 61 44 58 44 C55 44 52 37 48 37 Z" />
+        <path class="arm-left" d="M46 41 C36 46 28 38 22 30" />
+        <path class="arm-right" d="M70 41 C82 38 92 48 98 56" />
+        <path class="flowing-dress" d="M50 62 C35 72 18 95 12 122 C32 128 55 125 72 115 C88 122 102 125 110 120 C102 92 82 72 68 62 C63 60 55 60 50 62 Z" />
+        <path class="leg-left" d="M48 115 L40 152" />
+        <path class="leg-right" d="M74 112 L84 148" />
+    </svg>
+</div>
+"""
+st.markdown(dancer_html, unsafe_allow_html=True)
