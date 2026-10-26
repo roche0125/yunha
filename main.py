@@ -48,7 +48,7 @@ st.markdown(
     .welcome-card {
         background: linear-gradient(145deg, #18181b, #121214);
         border: 1px solid #3f3f46;
-        border-left: 5px solid #c0c0c0; /* 실버 포인트 line */
+        border-left: 5px solid #c0c0c0;
         padding: 24px;
         border-radius: 12px;
         margin-top: 20px;
@@ -101,7 +101,7 @@ st.markdown(
         100% { transform: translateY(-10px) scale(1.1); opacity: 1; }
     }
 
-    /* 💃 우측 하단 리얼한 인체 라인 & 드레스 흩날림 애니메이션 🤍 */
+    /* 💃 우측 하단 리얼한 인체 곡선 & 드레스 흩날림 애니메이션 */
     .dancer-container {
         position: fixed;
         bottom: 20px;
@@ -133,20 +133,17 @@ st.markdown(
         animation: bodySway 2.5s infinite alternate ease-in-out;
     }
 
-    /* 우아한 몸통 실루엣 */
     .body-shape {
         fill: #ffffff;
         transform-origin: 60px 50px;
     }
 
-    /* 흩날리는 풍성한 드레스 스커트 */
     .flowing-dress {
         fill: rgba(255, 255, 255, 0.9);
         transform-origin: 60px 65px;
         animation: dressWave 1.6s infinite alternate ease-in-out;
     }
 
-    /* 우아한 팔 움직임 */
     .arm-left {
         fill: none;
         stroke: #ffffff;
@@ -167,7 +164,6 @@ st.markdown(
         animation: armRightMotion 2s infinite alternate ease-in-out;
     }
 
-    /* 다리 움직임 */
     .leg-left {
         fill: none;
         stroke: #ffffff;
@@ -227,7 +223,6 @@ st.markdown(
         100% { opacity: 1; transform: scale(1.25); }
     }
 
-    /* 구분선 스타일 */
     hr {
         border-color: #27272a !important;
     }
@@ -242,7 +237,7 @@ st.write("Deep & Chill Music Bar 🍸")
 
 st.markdown("<hr>", unsafe_allow_html=True)
 
-# 안내 카드 영역 (실버 & 매트 블랙 스타일)
+# 안내 카드 영역
 st.markdown(
     """
     <div class="welcome-card">
@@ -258,7 +253,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# 🎵 하단 중앙 음표 애니메이션 박스
+# 하단 중앙 음표 애니메이션 박스
 st.markdown(
     """
     <div class="dancing-box">
@@ -272,11 +267,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# 💃 우측 하단 리얼한 인체 곡선 & 드레스 실루엣 춤추는 애니메이션
-st.markdown(
-    """
-    <div class="dancer-container">
-        <div class="dancer-glow"></div>
-        <svg class="realistic-dancer-svg" viewBox="0 0 120 160">
-            <!-- 머리 & 목 (부드러운 곡선) -->
-            <path class="body-shape" d="M57 15 C53 15 50 18 50 22 C50 26 53 29 57
+# 우측 하단 리얼한 인체 곡선 & 드레스 실루엣 춤추는 애니메이션
+dancer_html = """
+<div class="dancer
