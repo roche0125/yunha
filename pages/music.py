@@ -196,7 +196,6 @@ with main_col_right:
 
 if btn_analyze:
     with main_col_right:
-        # ANALYZING 없이 입력한 노래 제목/가수만 빠르게 회전하도록 변경! 💙
         active_label = f"{song_title} - {artist}" if (song_title and artist) else (song_title if song_title else "MUSIC HUB")
         render_turntable(display_text=active_label, is_fast=True)
 
@@ -205,7 +204,7 @@ if btn_analyze:
     elif not song_title or not artist:
         st.warning("노래 제목과 가수 이름을 모두 입력해 주세요.")
     else:
-        with st.spinner("Analyzing lyrical emotions and rendering the visual palette... 🎼"):
+        with st.spinner("AI가 가사 속 정서를 해체하고 시각화하는 중... 🖤"):
             try:
                 client = genai.Client(api_key=api_key)
                 
@@ -227,15 +226,27 @@ if btn_analyze:
                     "}"
                 )
 
-                response = client.models.generate_content(
-                    model="gemini-3.8-flash",
-                    contents=prompt,
-                    config=types.GenerateContentConfig(response_mime_type="application/json"),
-                )
+                # 503 과부하 에러 대비 자동 재시도(Retry) 로직 추가 🖤
+                max_retries = 3
+                response = None
+                for attempt in range(max_retries):
+                    try:
+                        response = client.models.generate_content(
+                            model="gemini-3.8-flash",
+                            contents=prompt,
+                            config=types.GenerateContentConfig(response_mime_type="application/json"),
+                        )
+                        break
+                    except Exception as api_err:
+                        if "503" in str(api_err) or "UNAVAILABLE" in str(api_err):
+                            if attempt < max_retries - 1:
+                                time.sleep(2) # 2초 대기 후 재시도
+                                continue
+                        raise api_err
 
                 data = json.loads(response.text)
 
-                st.success("Decode Coomplete 🎧")
+                st.success("Decode Complete 🎧")
                 st.divider()
 
                 st.subheader("📌 Subject & Theme")
@@ -270,4 +281,8 @@ if btn_analyze:
                             st.markdown(f'<div class="keyword-card"><div class="keyword-label">Keyword {idx+1}</div><div class="keyword-value"># {kw}</div></div>', unsafe_allow_html=True)
 
             except Exception as e:
-                st.error(f"⚠️ 오류가 발생했습니다: {e}")
+                err_msg = str(e)
+                if "503" in err_msg or "UNAVAILABLE" in err_msg:
+                    st.warning("⏳ **Server Busy:** 현재 AI 서버가 붐비고 있어! 잠시 후(10~20초 뒤)에 다시 버튼을 눌러줘 🖤✨")
+                else:
+                    st.error(f"⚠️ 오류가 발생했습니다: {e}")
