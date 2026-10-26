@@ -66,6 +66,34 @@ div.stButton > button p {
     font-weight: bold !important;
 }
 
+/* 🎶 오디오 파형(Equalizer) 애니메이션 스타일 */
+.equalizer-container {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 4px;
+    height: 32px;
+    margin-left: 15px;
+    vertical-align: middle;
+}
+
+.bar {
+    width: 4px;
+    background-color: #e0e0e0;
+    border-radius: 2px;
+    animation: bounce 1.2s infinite ease-in-out;
+}
+
+.bar:nth-child(1) { animation-delay: 0.1s; height: 15px; }
+.bar:nth-child(2) { animation-delay: 0.4s; height: 28px; }
+.bar:nth-child(3) { animation-delay: 0.2s; height: 20px; }
+.bar:nth-child(4) { animation-delay: 0.5s; height: 32px; }
+.bar:nth-child(5) { animation-delay: 0.3s; height: 18px; }
+
+@keyframes bounce {
+    0%, 100% { transform: scaleY(0.4); opacity: 0.4; }
+    50% { transform: scaleY(1); opacity: 1; }
+}
+
 /* 구분선 */
 hr {
     border-color: #27272a !important;
@@ -84,8 +112,20 @@ if api_key:
     except Exception as e:
         st.warning(f"Gemini API 연결 실패: {e}")
 
-# 2. 메인 화면 구성
-st.title("🎧 My Own Playlist 🖤")
+# 2. 메인 화면 구성 (제목 옆에 오디오 파형 애니메이션 추가 🖤)
+title_html = """
+<div style="display: flex; align-items: center; flex-wrap: wrap;">
+    <h1 style="margin: 0; padding: 0;">🎧 My Own Playlist 🖤</h1>
+    <div class="equalizer-container">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+    </div>
+</div>
+"""
+st.markdown(title_html, unsafe_allow_html=True)
 st.caption("당신의 무드와 순간에 맞춘 커스텀 플레이리스트 💙")
 
 st.markdown("---")
@@ -179,19 +219,27 @@ if generate_clicked:
             3. 곡 리스트 (번호, 곡명, 아티스트, 추천 이유 한 줄)
             """
             
-            try:
-                response = client.models.generate_content(
-                    model='gemini-3.8-flash',  # 👈 이 부분이 최신 모델명으로 바뀜!
-                    contents=prompt
-                )
-                st.success("Build Complete 🖤")
-                st.markdown(response.text)
-            except Exception as e:
-                err_msg = str(e)
-                if "503" in err_msg or "UNAVAILABLE" in err_msg or "high demand" in err_msg:
-                    st.warning("⏳ **Please wait...** 사용자가 많아서 Gemini AI 서버가 잠시 붐비고 있어! 10~20초 정도 기다렸다가 다시 버튼을 눌러줘 💙✨")
-                else:
-                    st.error(f"AI 추천 중 오류가 발생했어: {e}")
+            # 에러 방지용 재시도 로직 추가 🖤
+            max_retries = 3
+            response = None
+            for attempt in range(max_retries):
+                try:
+                    response = client.models.generate_content(
+                        model='gemini-3.8-flash',
+                        contents=prompt
+                    )
+                    break
+                except Exception as api_err:
+                    err_str = str(api_err)
+                    if "503" in err_str or "UNAVAILABLE" in err_str or "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
+                        if attempt < max_retries - 1:
+                            time.sleep(3)
+                            continue
+                    raise api_err
+
+            st.success("Build Complete 🖤")
+            st.markdown(response.text)
+            
     else:
         st.info("💡 Gemini API 키가 설정되지 않아 규칙 기반(알고리즘)으로 추천해줄게!")
         
