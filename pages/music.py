@@ -8,7 +8,7 @@ from google.genai import types
 
 # 페이지 기본 설정
 st.set_page_config(
-    page_title="AI 음악 감정 & 분위기 분석기",
+    page_title="Sound Palette",
     page_icon="🖤",
     layout="wide",
 )
