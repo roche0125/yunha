@@ -204,7 +204,7 @@ if btn_analyze:
     elif not song_title or not artist:
         st.warning("노래 제목과 가수 이름을 모두 입력해 주세요.")
     else:
-        with st.spinner("AI가 가사 속 정서를 해체하고 시각화하는 중... 🖤"):
+        with st.spinner("Analyzing lyrical emotions and rendering the visual palette... 🖤"):
             try:
                 client = genai.Client(api_key=api_key)
                 
