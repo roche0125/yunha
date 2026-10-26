@@ -1,5 +1,6 @@
 import json
 import time
+import urllib.parse
 import pandas as pd
 import plotly.express as px
 import streamlit as st
@@ -68,6 +69,7 @@ st.markdown(
         text-align: center;
         margin-bottom: 8px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        transition: all 0.5s ease;
     }
     .keyword-label {
         font-size: 14px !important;
@@ -94,6 +96,7 @@ st.markdown(
         align-items: center;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
         position: relative;
+        transition: all 0.8s ease;
     }
 
     .cd-disc {
@@ -175,7 +178,7 @@ with main_col_left:
 def render_turntable(display_text="MUSIC HUB * STREAMLIT *", is_fast=False):
     mode = "spin-fast" if is_fast else "spin-slow"
     html_code = f"""
-    <div class="turntable-box">
+    <div class="turntable-box" id="turntableBox">
         <div class="cd-disc {mode}">
             <svg class="cd-text-svg" viewBox="0 0 170 170">
               <path id="textPath" d="M 22,85 A 63,63 0 1,1 148,85 A 63,63 0 1,1 22,85" fill="none" />
@@ -226,7 +229,6 @@ if btn_analyze:
                     "}"
                 )
 
-                # 503 과부하 에러 대비 자동 재시도(Retry) 로직 추가 🖤
                 max_retries = 3
                 response = None
                 for attempt in range(max_retries):
@@ -240,11 +242,27 @@ if btn_analyze:
                     except Exception as api_err:
                         if "503" in str(api_err) or "UNAVAILABLE" in str(api_err):
                             if attempt < max_retries - 1:
-                                time.sleep(2) # 2초 대기 후 재시도
+                                time.sleep(2)
                                 continue
                         raise api_err
 
                 data = json.loads(response.text)
+                hex_code = data.get("color_hex", "#3182CE")
+
+                # 🌟 3번: 분석 결과 대표 컬러로 은은한 앰비언트 글로우(Ambient Glow) 주입 🖤
+                glow_css = f"""
+                <style>
+                .turntable-box {{
+                    box-shadow: 0 0 35px {hex_code}66, 0 10px 30px rgba(0, 0, 0, 0.8) !important;
+                    border-color: {hex_code}AA !important;
+                }}
+                .keyword-card {{
+                    box-shadow: 0 4px 15px {hex_code}33 !important;
+                    border-color: {hex_code}55 !important;
+                }}
+                </style>
+                """
+                st.markdown(glow_css, unsafe_allow_html=True)
 
                 st.success("Decode Complete 🎧")
                 st.divider()
@@ -255,10 +273,9 @@ if btn_analyze:
                     st.info(f"**Summary:** {data.get('theme_summary', '')}")
                     st.write(f"**💡 Vibe:** {data.get('vibe_description', '')}")
                 with col_color:
-                    hex_code = data.get("color_hex", "#3182CE")
                     color_name = data.get("vibe_color", "Color")
                     st.markdown(
-                        f'<div style="background-color: {hex_code}; padding: 20px; border-radius: 12px; text-align: center; color: white; font-weight: bold;">대표 컬러<br><br>{color_name}</div>',
+                        f'<div style="background-color: {hex_code}; padding: 20px; border-radius: 12px; text-align: center; color: white; font-weight: bold; box-shadow: 0 0 20px {hex_code}88;">대표 컬러<br><br>{color_name}</div>',
                         unsafe_allow_html=True,
                     )
 
@@ -267,7 +284,7 @@ if btn_analyze:
                 df_emotions = pd.DataFrame(data.get("emotions", []))
                 if not df_emotions.empty:
                     fig = px.bar(df_emotions, x="emotion", y="ratio", text="ratio")
-                    fig.update_traces(marker_color=data.get("color_hex", "#3182CE"), textposition="outside")
+                    fig.update_traces(marker_color=hex_code, textposition="outside")
                     fig.update_layout(height=350, paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#e0e0e0"))
                     st.plotly_chart(fig, use_container_width=True)
 
@@ -279,9 +296,8 @@ if btn_analyze:
                     for idx, kw in enumerate(keywords):
                         with kw_cols[idx]:
                             st.markdown(f'<div class="keyword-card"><div class="keyword-label">Keyword {idx+1}</div><div class="keyword-value"># {kw}</div></div>', unsafe_allow_html=True)
-                            
-                # 🔗 분석 완료 후 맨 밑에 자동으로 유튜브 검색으로 연결되는 작고 시크한 Listen 버튼 추가! 🖤
-                import urllib.parse
+
+                # 🔗 유튜브 자동 연결 Listen 버튼
                 query_str = urllib.parse.quote(f"{artist} {song_title}")
                 yt_search_url = f"https://www.youtube.com/results?search_query={query_str}"
                 
@@ -290,7 +306,7 @@ if btn_analyze:
                     f'''
                     <div style="text-align: center; margin-top: 25px;">
                         <a href="{yt_search_url}" target="_blank" style="text-decoration: none;">
-                            <button style="background-color: #18181b; color: #ffffff; border: 1px solid #3f3f46; padding: 10px 24px; border-radius: 20px; font-size: 15px; font-weight: bold; cursor: pointer; font-family: 'Gowun Batang', serif; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+                            <button style="background-color: #18181b; color: #ffffff; border: 1px solid {hex_code}88; padding: 10px 24px; border-radius: 20px; font-size: 15px; font-weight: bold; cursor: pointer; font-family: 'Gowun Batang', serif; box-shadow: 0 0 15px {hex_code}44;">
                                 ▶ Listen on YouTube
                             </button>
                         </a>
@@ -298,7 +314,7 @@ if btn_analyze:
                     ''',
                     unsafe_allow_html=True
                 )
-                
+
             except Exception as e:
                 err_msg = str(e)
                 if "503" in err_msg or "UNAVAILABLE" in err_msg:
