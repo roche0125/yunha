@@ -72,6 +72,36 @@ st.markdown(
         line-height: 1.6;
     }
 
+    /* 🕺 춤추는 미니멀 애니메이션 박스 스타일 */
+    .dancing-box {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 15px;
+        margin-top: 40px;
+        padding: 20px;
+        background: linear-gradient(145deg, #141416, #0e0e10);
+        border: 1px solid #27272a;
+        border-radius: 16px;
+        box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.8);
+    }
+
+    .dancing-note {
+        font-size: 24px;
+        animation: danceBeat 1s infinite alternate ease-in-out;
+    }
+
+    .dancing-note:nth-child(1) { animation-delay: 0.1s; }
+    .dancing-note:nth-child(2) { animation-delay: 0.3s; }
+    .dancing-note:nth-child(3) { animation-delay: 0.5s; }
+    .dancing-note:nth-child(4) { animation-delay: 0.2s; }
+    .dancing-note:nth-child(5) { animation-delay: 0.4s; }
+
+    @keyframes danceBeat {
+        0% { transform: translateY(0px) scale(0.9); opacity: 0.5; filter: drop-shadow(0 0 0px rgba(192,192,192,0)); }
+        100% { transform: translateY(-12px) scale(1.1); opacity: 1; filter: drop-shadow(0 0 8px rgba(192,192,192,0.4)); }
+    }
+
     /* 구분선 스타일 */
     hr {
         border-color: #27272a !important;
@@ -98,6 +128,20 @@ st.markdown(
             사이드바에서 원하는 모드를 선택하세요.<br>
             가사 감정 분석부터 커스텀 플레이리스트 큐레이션까지 🎧
         </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+# 🕺 하단 빈 공간에 춤추는 음표 애니메이션 박스 추가 🖤
+st.markdown(
+    """
+    <div class="dancing-box">
+        <span class="dancing-note">🎵</span>
+        <span class="dancing-note">🖤</span>
+        <span class="dancing-note">🎶</span>
+        <span class="dancing-note">🍸</span>
+        <span class="dancing-note">💿</span>
     </div>
     """,
     unsafe_allow_html=True,
