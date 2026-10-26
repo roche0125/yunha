@@ -150,4 +150,57 @@ with btn_col:
 
 if generate_clicked:
     
-    #
+    # 조건 정리
+    mood_desc = "평범함"
+    if mood_score < 35: 
+        mood_desc = "차분하고 약간 차분/우울함"
+    elif mood_score > 65: 
+        mood_desc = "매우 신나고 활기참"
+
+    weather_desc = "보통 날씨"
+    if weather_score < 35: 
+        weather_desc = "흐리거나 비가 오고 쌀쌀한 날씨"
+    elif weather_score > 65: 
+        weather_desc = "맑고 화창하며 에너지가 넘치는 날씨"
+
+    situation_str = situation if situation != "선택 안 함" else "특별한 제한 없음"
+    genres_str = ", ".join(selected_genres) if selected_genres else "전 장르 자유"
+
+    st.subheader("🎵 Playlist")
+
+    # 1. Gemini AI를 활용한 추천
+    if client:
+        with st.spinner("Gemini가 너의 기분과 상황을 분석해서 최고의 곡들을 선곡 중이야... 💙"):
+            prompt = f"""
+            다음 조건에 완벽히 어울리는 음악 플레이리스트를 작성해줘.
+            
+            [사용자 조건]
+            - 기분 상태: {mood_score}/100 ({mood_desc})
+            - 날씨 분위기: {weather_score}/100 ({weather_desc})
+            - 총 플레이리스트 길이: 약 {playlist_length}분 (대략 {max(3, playlist_length // 3)}~{max(5, playlist_length // 3 + 2)}곡 구성)
+            - 현재 상황: {situation_str}
+            - 선호 장르: {genres_str}
+            
+            [출력 형식]
+            1. 추천 플레이리스트 제목 (감성적이고 센스 있는 제목)
+            2. 선곡 이유 요약 (다정한 말투로 2~3줄)
+            3. 곡 리스트 (번호, 곡명, 아티스트, 추천 이유 한 줄)
+            """
+            
+            try:
+                response = client.models.generate_content(
+                    model='gemini-2.5-flash',
+                    contents=prompt
+                )
+                st.success("Mission Complete! 💙")
+                st.markdown(response.text)
+            except Exception as e:
+                err_msg = str(e)
+                if "503" in err_msg or "UNAVAILABLE" in err_msg or "high demand" in err_msg:
+                    st.warning("⏳ **Please wait...** 사용자가 많아서 Gemini AI 서버가 잠시 붐비고 있어! 10~20초 정도 기다렸다가 다시 버튼을 눌러줘 💙✨")
+                else:
+                    st.error(f"AI 추천 중 오류가 발생했어: {e}")
+    
+    # 2. API 키 없을 시 알고리즘 대체 생성
+    else:
+        st.info("💡 Gemini API 키가 설정되지 않아 규칙 기반(알
