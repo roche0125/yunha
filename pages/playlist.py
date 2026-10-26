@@ -44,8 +44,8 @@ html, body, [class*="css"], [class*="st-"], div, span, h1, h2, h3, h4, h5, h6, p
 
 h1 { font-size: 42px !important; font-weight: 700; color: #ffffff !important; }
 h2 { font-size: 32px !important; font-weight: 700; color: #d1d5db !important; }
-h3 { font-size: 26px !important; font-weight: 700; color: #9ca3af !important; }
-p, div, label { font-size: 19px; color: #c4c4c4; }
+h3 { font-size: 24px !important; font-weight: 700; color: #9ca3af !important; }
+p, div, label { font-size: 18px; color: #c4c4c4; }
 
 /* 5. 입력 컴포넌트(슬라이더, 멀티셀렉트 등) 다크 스타일 */
 .stMultiSelect div[data-baseweb="select"] {
@@ -86,65 +86,72 @@ if api_key:
 
 # 2. 메인 화면 구성
 st.title("🎧 My Own Playlist 🖤")
-st.caption("현재 내 기분, 날씨, 상황에 딱 맞는 맞춤형 트랙 리스트를 만들어줄게!")
+st.caption("현재 내 기분, 날씨, 상황에 딱 맞는 맞춤형 트랙 리스트를 만들어줄게! 💙")
 
 st.markdown("---")
 
-# 3. 입력 세션: 슬라이더 & 선택버튼
-col_left, col_right = st.columns(2)
+# 3. 입력 세션: 슬라이더 & 선택버튼 (좌우 여백을 주어 가로 폭을 좁고 콤팩트하게 조절!)
+_, center_container, _ = st.columns([1, 6, 1])
 
-with col_left:
-    st.subheader("1. Condition Slider 🎚️")
-    
-    # 기분 슬라이더 (1~100)
-    mood_score = st.slider(
-        "Feeling",
-        min_value=1,
-        max_value=100,
-        value=50,
-        help="1에 가까울수록 차분/우울, 100에 가까울수록 극도로 신남!"
-    )
-    
-    # 날씨 분위기 슬라이더 (1~100)
-    weather_score = st.slider(
-        "Weather",
-        min_value=1,
-        max_value=100,
-        value=50,
-        help="1: 비/어두움/쌀쌀함, 100: 화창함/맑음/무더움"
-    )
-    
-    # 플레이리스트 길이 (분 단위)
-    playlist_length = st.slider(
-        "Length (minute)",
-        min_value=15,
-        max_value=180,
-        value=60,
-        step=15,
-        format="%d분"
-    )
+with center_container:
+    col_left, col_right = st.columns(2, gap="large")
 
-with col_right:
-    st.subheader("2. Situation & Ganre 🎯")
-    
-    # 현재 상황 (단일 선택 버튼 라디오, 선택 안 함 가능)
-    situation = st.radio(
-        "Situation",
-        options=["선택 안 함", "📖 Study/Work", "🏋️ Exercise/Walk", "☕ Break/Healing", "🌙 Sleep/Meditation", "🚗 Drive"],
-        index=0
-    )
-    
-    # 선호 장르 (복수 선택 가능 multiselect)
-    selected_genres = st.multiselect(
-        "Ganre",
-        options=["K-Pop", "Pop", "Lofi / Jazz", "Indie / Acoustic", "Hip-Hop / R&B", "EDM / Dance", "Classic / Instrumental", "Rock / Metal"],
-        default=[]
-    )
+    with col_left:
+        st.subheader("1. Condition Slider 🎚️")
+        
+        # 기분 슬라이더 (1~100)
+        mood_score = st.slider(
+            "Feeling",
+            min_value=1,
+            max_value=100,
+            value=50,
+            help="1에 가까울수록 차분/우울, 100에 가까울수록 극도로 신남!"
+        )
+        
+        # 날씨 분위기 슬라이더 (1~100)
+        weather_score = st.slider(
+            "Weather",
+            min_value=1,
+            max_value=100,
+            value=50,
+            help="1: 비/어두움/쌀쌀함, 100: 화창함/맑음/무더움"
+        )
+        
+        # 플레이리스트 길이 (분 단위)
+        playlist_length = st.slider(
+            "Length (minute)",
+            min_value=15,
+            max_value=180,
+            value=60,
+            step=15,
+            format="%d분"
+        )
+
+    with col_right:
+        st.subheader("2. Situation & Genre 🎯")
+        
+        # 현재 상황 (단일 선택 버튼 라디오, 선택 안 함 가능)
+        situation = st.radio(
+            "Situation",
+            options=["선택 안 함", "📖 Study/Work", "🏋️ Exercise/Walk", "☕ Break/Healing", "🌙 Sleep/Meditation", "🚗 Drive"],
+            index=0
+        )
+        
+        # 선호 장르 (복수 선택 가능 multiselect)
+        selected_genres = st.multiselect(
+            "Genre",
+            options=["K-Pop", "Pop", "Lofi / Jazz", "Indie / Acoustic", "Hip-Hop / R&B", "EDM / Dance", "Classic / Instrumental", "Rock / Metal"],
+            default=[]
+        )
 
 st.markdown("---")
 
-# 4. 추천 생성 버튼 & 실행 로직
-if st.button("✨ Make Playlist", type="primary", use_container_width=True):
+# 4. 추천 생성 버튼 & 실행 로직 (버튼도 가운데 정렬된 영역 안에서 예쁘게 출력되도록 설정)
+_, btn_container, _ = st.columns([1, 6, 1])
+with btn_container:
+    generate_clicked = st.button("✨ Make Playlist", type="primary", use_container_width=True)
+
+if generate_clicked:
     
     # 조건 정리
     mood_desc = "평범함"
@@ -181,7 +188,7 @@ if st.button("✨ Make Playlist", type="primary", use_container_width=True):
             
             try:
                 response = client.models.generate_content(
-                    model='gemini-3.8-flash',  # 👈 최신 모델명으로 변경!
+                    model='gemini-2.5-flash',  # 💡 구글 GenAI 최신 표준 모델명 (원하시면 기존 모델명으로 유지하셔도 돼요!)
                     contents=prompt
                 )
                 st.success("Mission Complete! 💙")
