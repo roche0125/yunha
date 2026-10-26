@@ -208,12 +208,59 @@ if generate_clicked:
 
     if client:
         with st.spinner("Analyzing your vibe and calibrating the ultimate tracklist... 💙"):
-            prompt = f"""
-            다음 조건에 완벽히 어울리는 음악 플레이리스트를 작성해줘. 반드시 JSON이나 줄글 형식이 아니라 깔끔한 리스트 형태로 작성해줘.
+            prompt = (
+                "다음 조건에 완벽히 어울리는 음악 플레이리스트를 작성해줘. "
+                "반드시 JSON이나 줄글 형식이 아니라 깔끔한 리스트 형태로 작성해줘.\n\n"
+                f"[사용자 조건]\n"
+                f"- 기분 상태: {mood_score}/100 ({mood_desc})\n"
+                f"- 날씨 분위기: {weather_score}/100 ({weather_desc})\n"
+                f"- 총 플레이리스트 길이: 약 {playlist_length}분\n"
+                f"- 현재 상황: {situation_str}\n"
+                f"- 선호 장르: {genres_str}\n\n"
+                "[출력 형식]\n"
+                "### 💿 [플레이리스트 제목]\n"
+                "- 선곡 이유 요약 (2~3줄)\n\n"
+                "그리고 각 곡은 아래 형식으로 정확히 5곡 이상 작성해줘:\n"
+                "1. **곡명** - 아티스트 (추천 이유 한 줄)"
+            )
             
-            [사용자 조건]
-            - 기분 상태: {mood_score}/100 ({mood_desc})
-            - 날씨 분위기: {weather_score}/100 ({weather_desc})
-            - 총 플레이리스트 길이: 약 {playlist_length}분
-            - 현재 상황: {situation_str}
-            - 선호 장
+            max_retries = 3
+            response = None
+            for attempt in range(max_retries):
+                try:
+                    response = client.models.generate_content(
+                        model='gemini-2.0-flash',
+                        contents=prompt
+                    )
+                    break
+                except Exception as api_err:
+                    err_str = str(api_err)
+                    if "503" in err_str or "UNAVAILABLE" in err_str or "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
+                        if attempt < max_retries - 1:
+                            time.sleep(3)
+                            continue
+                    raise api_err
+
+            st.success("Build Complete 🖤")
+            
+            response_text = response.text
+            lines = response_text.split("\n")
+            
+            for line in lines:
+                if line.strip().startswith(tuple(f"{i}." for i in range(1, 20))):
+                    clean_line = line.strip()
+                    st.markdown(clean_line, unsafe_allow_html=True)
+                    
+                    parts = clean_line.split("-")
+                    if len(parts) >= 2:
+                        song_part = parts[0].replace("*", "").replace("1.", "").replace("2.", "").replace("3.", "").replace("4.", "").replace("5.", "").replace("6.", "").strip()
+                        artist_part = parts[1].split("(")[0].replace("*", "").strip()
+                        query_str = urllib.parse.quote(f"{artist_part} {song_part}")
+                        yt_url = f"https://www.youtube.com/results?search_query={query_str}"
+                        
+                        st.markdown(f'<div style="margin-bottom: 10px;"><a href="{yt_url}" target="_blank" class="yt-listen-btn">▶ Listen on YouTube</a></div>', unsafe_allow_html=True)
+                else:
+                    st.markdown(line)
+            
+    else:
+        st.info("💡 Gemini API 키가 설정되지 않아 규칙 기반(알고리
