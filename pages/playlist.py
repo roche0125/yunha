@@ -86,7 +86,7 @@ if api_key:
 
 # 2. 메인 화면 구성
 st.title("🎧 My Own Playlist 🖤")
-st.caption("현재 내 기분, 날씨, 상황에 딱 맞는 맞춤형 트랙 리스트를 만들어줄게! 💙")
+st.caption("당신의 무드와 순간에 맞춘 커스텀 플레이리스트 💙")
 
 st.markdown("---")
 
@@ -101,7 +101,7 @@ with col_left:
         min_value=1,
         max_value=100,
         value=50,
-        help="1에 가까울수록 차분/우울, 100에 가까울수록 극도로 신남!"
+        help="1에 가까울수록 Down, 100에 가까울수록 Up"
     )
     
     weather_score = st.slider(
@@ -109,7 +109,7 @@ with col_left:
         min_value=1,
         max_value=100,
         value=50,
-        help="1: 비/어두움/쌀쌀함, 100: 화창함/맑음/무더움"
+        help="1: Dark / Cloudy, 100: Bright / Sunny"
     )
     
     playlist_length = st.slider(
@@ -126,7 +126,7 @@ with col_right:
     
     situation = st.radio(
         "Situation",
-        options=["선택 안 함", "📖 Study/Work", "🏋️ Exercise/Walk", "☕ Break/Healing", "🌙 Sleep/Meditation", "🚗 Drive"],
+        options=["선택 안 함", "📖 Study / Work", "🏋️ Exercise / Walk", "☕ Break / Healing", "🌙 Sleep / Meditation", "🚗 Drive"],
         index=0
     )
     
@@ -162,7 +162,7 @@ if generate_clicked:
     st.subheader("🎵 Playlist")
 
     if client:
-        with st.spinner("Gemini가 너의 기분과 상황을 분석해서 최고의 곡들을 선곡 중이야... 💙"):
+        with st.spinner("Analyzing your vibe and calibrating the ultimate tracklist... 💙"):
             prompt = f"""
             다음 조건에 완벽히 어울리는 음악 플레이리스트를 작성해줘.
             
