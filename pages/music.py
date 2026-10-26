@@ -279,7 +279,26 @@ if btn_analyze:
                     for idx, kw in enumerate(keywords):
                         with kw_cols[idx]:
                             st.markdown(f'<div class="keyword-card"><div class="keyword-label">Keyword {idx+1}</div><div class="keyword-value"># {kw}</div></div>', unsafe_allow_html=True)
-
+                            
+                # 🔗 분석 완료 후 맨 밑에 자동으로 유튜브 검색으로 연결되는 작고 시크한 Listen 버튼 추가! 🖤
+                import urllib.parse
+                query_str = urllib.parse.quote(f"{artist} {song_title}")
+                yt_search_url = f"https://www.youtube.com/results?search_query={query_str}"
+                
+                st.markdown("")
+                st.markdown(
+                    f'''
+                    <div style="text-align: center; margin-top: 25px;">
+                        <a href="{yt_search_url}" target="_blank" style="text-decoration: none;">
+                            <button style="background-color: #18181b; color: #ffffff; border: 1px solid #3f3f46; padding: 10px 24px; border-radius: 20px; font-size: 15px; font-weight: bold; cursor: pointer; font-family: 'Gowun Batang', serif; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+                                ▶ Listen on YouTube
+                            </button>
+                        </a>
+                    </div>
+                    ''',
+                    unsafe_allow_html=True
+                )
+                
             except Exception as e:
                 err_msg = str(e)
                 if "503" in err_msg or "UNAVAILABLE" in err_msg:
