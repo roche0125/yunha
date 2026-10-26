@@ -12,7 +12,7 @@ st.markdown(
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap');
 
-    /* 1. 사이드바 여닫기 버튼 깨짐 현상(keyboard_double_...) 완벽 차단 */
+    /* 1. 사이드바 여닫기 버튼 깨짐 현상 완벽 차단 */
     [data-testid="stSidebarCollapseButton"] {
         color: transparent !important;
     }
@@ -72,14 +72,15 @@ st.markdown(
         line-height: 1.6;
     }
 
-    /* 🕺 춤추는 미니멀 애니메이션 박스 스타일 */
+    /* 🕺 춤추는 애니메이션 박스 스타일 (상대 위치 설정) */
     .dancing-box {
+        position: relative;
         display: flex;
         justify-content: center;
         align-items: center;
         gap: 15px;
         margin-top: 40px;
-        padding: 20px;
+        padding: 30px 20px;
         background: linear-gradient(145deg, #141416, #0e0e10);
         border: 1px solid #27272a;
         border-radius: 16px;
@@ -95,11 +96,26 @@ st.markdown(
     .dancing-note:nth-child(2) { animation-delay: 0.3s; }
     .dancing-note:nth-child(3) { animation-delay: 0.5s; }
     .dancing-note:nth-child(4) { animation-delay: 0.2s; }
-    .dancing-note:nth-child(5) { animation-delay: 0.4s; }
 
     @keyframes danceBeat {
-        0% { transform: translateY(0px) scale(0.9); opacity: 0.5; filter: drop-shadow(0 0 0px rgba(192,192,192,0)); }
-        100% { transform: translateY(-12px) scale(1.1); opacity: 1; filter: drop-shadow(0 0 8px rgba(192,192,192,0.4)); }
+        0% { transform: translateY(0px) scale(0.9); opacity: 0.5; }
+        100% { transform: translateY(-10px) scale(1.1); opacity: 1; }
+    }
+
+    /* 💃 애니메이션 박스의 우측 하단 구석에 배치된 하얀 춤추는 사람 */
+    .box-corner-dancer {
+        position: absolute;
+        bottom: 8px;
+        right: 16px;
+        font-size: 22px;
+        color: #ffffff;
+        animation: dancePerson 0.8s infinite alternate ease-in-out;
+        filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.7));
+    }
+
+    @keyframes dancePerson {
+        0% { transform: translateY(0px) rotate(-8deg) scale(0.95); }
+        100% { transform: translateY(-8px) rotate(8deg) scale(1.1); }
     }
 
     /* 구분선 스타일 */
@@ -133,7 +149,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# 🕺 하단 빈 공간에 춤추는 음표 애니메이션 박스 추가 🖤
+# 🕺 박스 내부 우측 하단 구석에 하얀색 춤추는 사람이 들어간 애니메이션 🖤
 st.markdown(
     """
     <div class="dancing-box">
@@ -141,7 +157,7 @@ st.markdown(
         <span class="dancing-note">🖤</span>
         <span class="dancing-note">🎶</span>
         <span class="dancing-note">🍸</span>
-        <span class="dancing-note">💿</span>
+        <span class="box-corner-dancer">🕺</span>
     </div>
     """,
     unsafe_allow_html=True,
