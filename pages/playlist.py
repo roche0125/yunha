@@ -181,10 +181,10 @@ if generate_clicked:
             
             try:
                 response = client.models.generate_content(
-                    model='gemini-2.5-flash',
+                    model='gemini-3.8-flash',  # 👈 이 부분이 최신 모델명으로 바뀜!
                     contents=prompt
                 )
-                st.success("Mission Complete! 💙")
+                st.success("Build Complete 🖤")
                 st.markdown(response.text)
             except Exception as e:
                 err_msg = str(e)
