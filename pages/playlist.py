@@ -1,6 +1,7 @@
 import os
 import random
 import time
+import urllib.parse
 import streamlit as st
 from google import genai
 
@@ -95,6 +96,26 @@ div.stButton > button p {
     50% { transform: scaleY(1); opacity: 1; }
 }
 
+/* 🎧 곡별 작고 시크한 유튜브 버튼 스타일 */
+.yt-listen-btn {
+    background-color: #18181b;
+    color: #ffffff !important;
+    border: 1px solid #3f3f46;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: bold;
+    text-decoration: none;
+    display: inline-block;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    transition: all 0.2s ease;
+    font-family: 'Gowun Batang', serif !important;
+}
+.yt-listen-btn:hover {
+    border-color: #c0c0c0;
+    background-color: #27272a;
+}
+
 /* 구분선 */
 hr {
     border-color: #27272a !important;
@@ -131,7 +152,7 @@ st.caption("당신의 무드와 순간에 맞춘 커스텀 플레이리스트 �
 
 st.markdown("---")
 
-# 3. 입력 세션: 슬라이더 & 선택버튼 (좌우 여백과 두 컬럼 사이 간격 대칭 맞춤)
+# 3. 입력 세션: 슬라이더 & 선택버튼
 _, col_left, _, col_right, _ = st.columns([1, 4, 0.8, 4, 1])
 
 with col_left:
@@ -205,28 +226,29 @@ if generate_clicked:
     if client:
         with st.spinner("Analyzing your vibe and calibrating the ultimate tracklist... 💙"):
             prompt = f"""
-            다음 조건에 완벽히 어울리는 음악 플레이리스트를 작성해줘.
+            다음 조건에 완벽히 어울리는 음악 플레이리스트를 작성해줘. 반드시 JSON이나 줄글 형식이 아니라 깔끔한 리스트 형태로 작성해줘.
             
             [사용자 조건]
             - 기분 상태: {mood_score}/100 ({mood_desc})
             - 날씨 분위기: {weather_score}/100 ({weather_desc})
-            - 총 플레이리스트 길이: 약 {playlist_length}분 (대략 {max(3, playlist_length // 3)}~{max(5, playlist_length // 3 + 2)}곡 구성)
+            - 총 플레이리스트 길이: 약 {playlist_length}분
             - 현재 상황: {situation_str}
             - 선호 장르: {genres_str}
             
             [출력 형식]
-            1. 추천 플레이리스트 제목 (감성적이고 센스 있는 제목)
-            2. 선곡 이유 요약 (다정한 말투로 2~3줄)
-            3. 곡 리스트 (번호, 곡명, 아티스트, 추천 이유 한 줄)
+            ### 💿 [플레이리스트 제목]
+            - 선곡 이유 요약 (2~3줄)
+            
+            그리고 각 곡은 아래 형식으로 정확히 5곡 이상 작성해줘:
+            1. **곡명** - 아티스트 (추천 이유 한 줄)
             """
             
-            # 에러 방지용 재시도 로직 추가 🖤
             max_retries = 3
             response = None
             for attempt in range(max_retries):
                 try:
                     response = client.models.generate_content(
-                        model='gemini-3.8-flash',
+                        model='gemini-2.5-flash',
                         contents=prompt
                     )
                     break
@@ -239,7 +261,26 @@ if generate_clicked:
                     raise api_err
 
             st.success("Build Complete 🖤")
-            st.markdown(response.text)
+            
+            # AI 응답 텍스트를 파싱해서 각 곡마다 유튜브 버튼을 달아주기 위한 처리
+            response_text = response.text
+            lines = response_text.split("\n")
+            
+            for line in lines:
+                if line.strip().startswith(tuple(f"{i}." for i in range(1, 20))):
+                    clean_line = line.strip()
+                    st.markdown(clean_line, unsafe_allow_html=True)
+                    
+                    parts = clean_line.split("-")
+                    if len(parts) >= 2:
+                        song_part = parts[0].replace("*", "").replace("1.", "").replace("2.", "").replace("3.", "").replace("4.", "").replace("5.", "").replace("6.", "").strip()
+                        artist_part = parts[1].split("(")[0].replace("*", "").strip()
+                        query_str = urllib.parse.quote(f"{artist_part} {song_part}")
+                        yt_url = f"https://www.youtube.com/results?search_query={query_str}"
+                        
+                        st.markdown(f'<div style="margin-bottom: 10px;"><a href="{yt_url}" target="_blank" class="yt-listen-btn">▶ Listen on YouTube</a></div>', unsafe_allow_html=True)
+                else:
+                    st.markdown(line)
             
     else:
         st.info("💡 Gemini API 키가 설정되지 않아 규칙 기반(알고리즘)으로 추천해줄게!")
@@ -257,4 +298,7 @@ if generate_clicked:
         
         st.write(f"### 🎧 [알고리즘 추천] {situation_str} 맞춤 리스트 ({playlist_length}분 분량)")
         for i, song in enumerate(recommended, 1):
-            st.write(f"**{i}. {song['title']}** - {song['artist']} `[{song['genre']}]`")
+            query_str = urllib.parse.quote(f"{song['artist']} {song['title']}")
+            yt_url = f"https://www.youtube.com/results?search_query={query_str}"
+            st.markdown(f"**{i}. {song['title']}** - {song['artist']} `[{song['genre']}]`")
+            st.markdown(f'<div style="margin-bottom: 10px;"><a href="{yt_url}" target="_blank" class="yt-listen-btn">▶ Listen on YouTube</a></div>', unsafe_allow_html=True)
