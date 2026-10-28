@@ -101,7 +101,7 @@ st.markdown(
         100% { transform: translateY(-10px) scale(1.1); opacity: 1; }
     }
 
-    /* 💃 우측 하단 리얼한 인체 곡선 & 드레스 흩날림 애니메이션 */
+    /* 💃 우측 하단 리얼한 인체 라인 & 드레스 흩날림 애니메이션 🤍 */
     .dancer-container {
         position: fixed;
         bottom: 20px;
@@ -133,17 +133,20 @@ st.markdown(
         animation: bodySway 2.5s infinite alternate ease-in-out;
     }
 
+    /* 우아한 몸통 실루엣 */
     .body-shape {
         fill: #ffffff;
         transform-origin: 60px 50px;
     }
 
+    /* 흩날리는 풍성한 드레스 스커트 */
     .flowing-dress {
         fill: rgba(255, 255, 255, 0.9);
         transform-origin: 60px 65px;
         animation: dressWave 1.6s infinite alternate ease-in-out;
     }
 
+    /* 우아한 팔 움직임 */
     .arm-left {
         fill: none;
         stroke: #ffffff;
@@ -164,6 +167,7 @@ st.markdown(
         animation: armRightMotion 2s infinite alternate ease-in-out;
     }
 
+    /* 다리 움직임 */
     .leg-left {
         fill: none;
         stroke: #ffffff;
@@ -223,13 +227,6 @@ st.markdown(
         100% { opacity: 1; transform: scale(1.25); }
     }
 
-    hr {
-        border-color: #27272a !important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
 
 # 헤더 영역
 st.title("🖤 Welcome to Music Hub")
