@@ -6,87 +6,75 @@ st.set_page_config(
     layout="wide"
 )
 
-# 구름 바탕(Gowun Batang) 폰트 & 블랙&실버 다크 테마 스타일 적용 (단일 따옴표 및 이스케이프 조합)
-css_style = (
-    "<style>\n"
-    "@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap');\n\n"
-    "/* 1. 사이드바 여닫기 버튼 깨짐 현상 완벽 차단 */\n"
-    "[data-testid=\"stSidebarCollapseButton\"] {\n"
-    "    color: transparent !important;\n"
-    "}\n"
-    "[data-testid=\"stSidebarCollapseButton\"] button span {\n"
-    "    font-family: 'Material Symbols Outlined', 'Material Icons' !important;\n"
-    "    font-size: 0px !important;\n"
-    "}\n\n"
-    "/* 전체 배경 다크 모드 설정 */\n"
-    ".stApp {\n"
-    "    background-color: #0e0e10;\n"
-    "    color: #e0e0e0;\n"
-    "}\n\n"
-    "/* 폰트 적용 (구름 바탕 유지) */\n"
-    "html, body, [class*=\"css\"], div, span, h1, h2, h3, h4, h5, h6, p, label, input, button {\n"
-    "    font-family: 'Gowun Batang', serif !important;\n"
-    "    color: #e0e0e0;\n"
-    "}\n\n"
-    "/* 제목 및 헤더 스타일 */\n"
-    "h1 {\n"
-    "    font-size: 42px !important;\n"
-    "    font-weight: 700;\n"
-    "    color: #ffffff !important;\n"
-    "    letter-spacing: -1px;\n"
-    "}\n"
-    "h2 { font-size: 32px !important; font-weight: 700; color: #d1d5db !important; }\n"
-    "h3 { font-size: 26px !important; font-weight: 700; color: #9ca3af !important; }\n"
-    "p, div { font-size: 19px; color: #c4c4c4; }\n\n"
-    "/* 메인 카드 스타일 (블랙 & 실버 감성) */\n"
-    ".welcome-card {\n"
-    "    background: linear-gradient(145deg, #18181b, #121214);\n"
-    "    border: 1px solid #3f3f46;\n"
-    "    border-left: 5px solid #c0c0c0;\n"
-    "    padding: 24px;\n"
-    "    border-radius: 12px;\n"
-    "    margin-top: 20px;\n"
-    "    margin-bottom: 30px;\n"
-    "    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6), 0 0 10px rgba(192, 192, 192, 0.08);\n"
-    "}\n\n"
-    ".card-title {\n"
-    "    font-size: 22px;\n"
-    "    font-weight: 700;\n"
-    "    color: #ffffff;\n"
-    "    margin-bottom: 10px;\n"
-    "    display: flex;\n"
-    "    align-items: center;\n"
-    "    gap: 8px;\n"
-    "}\n\n"
-    ".card-text {\n"
-    "    font-size: 18px;\n"
-    "    color: #a1a1aa;\n"
-    "    line-height: 1.6;\n"
-    "}\n\n"
-    "/* 🎵 중앙 하단 음표 박스 스타일 */\n"
-    ".dancing-box {\n"
-    "    display: flex;\n"
-    "    justify-content: center;\n"
-    "    align-items: center;\n"
-    "    gap: 15px;\n"
-    "    margin-top: 40px;\n"
-    "    padding: 20px;\n"
-    "    background: linear-gradient(145deg, #141416, #0e0e10);\n"
-    "    border: 1px solid #27272a;\n"
-    "    border-radius: 16px;\n"
-    "    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.8);\n"
-    "}\n\n"
-    ".dancing-note {\n"
-    "    font-size: 24px;\n"
-    "    animation: danceBeat 1s infinite alternate ease-in-out;\n"
-    "}\n\n"
-    ".dancing-note:nth-child(1) { animation-delay: 0.1s; }\n"
-    ".dancing-note:nth-child(2) { animation-delay: 0.3s; }\n"
-    ".dancing-note:nth-child(3) { animation-delay: 0.5s; }\n"
-    ".dancing-note:nth-child(4) { animation-delay: 0.2s; }\n\n"
-    "@keyframes danceBeat {\n"
-    "    0% { transform: translateY(0px) scale(0.9); opacity: 0.5; }\n"
-    "    100% { transform: translateY(-10px) scale(1.1); opacity: 1; }\n"
-    "}\n\n"
-    "/* 💃 우측 하단 리얼한 인체 라인 & 드레스 흩날림 애니메이션 🤍 */\n"
-    ".dancer-container {\n"
+# 구름 바탕(Gowun Batang) 폰트 & 블랙&실버 다크 테마 스타일 적용
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap');
+
+/* 1. 사이드바 여닫기 버튼 깨짐 현상 완벽 차단 */
+[data-testid="stSidebarCollapseButton"] {
+    color: transparent !important;
+}
+[data-testid="stSidebarCollapseButton"] button span {
+    font-family: 'Material Symbols Outlined', 'Material Icons' !important;
+    font-size: 0px !important;
+}
+
+/* 전체 배경 다크 모드 설정 */
+.stApp {
+    background-color: #0e0e10;
+    color: #e0e0e0;
+}
+
+/* 폰트 적용 (구름 바탕 유지) */
+html, body, [class*="css"], div, span, h1, h2, h3, h4, h5, h6, p, label, input, button {
+    font-family: 'Gowun Batang', serif !important;
+    color: #e0e0e0;
+}
+
+/* 제목 및 헤더 스타일 */
+h1 {
+    font-size: 42px !important;
+    font-weight: 700;
+    color: #ffffff !important;
+    letter-spacing: -1px;
+}
+h2 { font-size: 32px !important; font-weight: 700; color: #d1d5db !important; }
+h3 { font-size: 26px !important; font-weight: 700; color: #9ca3af !important; }
+p, div { font-size: 19px; color: #c4c4c4; }
+
+/* 메인 카드 스타일 (블랙 & 실버 감성) */
+.welcome-card {
+    background: linear-gradient(145deg, #18181b, #121214);
+    border: 1px solid #3f3f46;
+    border-left: 5px solid #c0c0c0;
+    padding: 24px;
+    border-radius: 12px;
+    margin-top: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6), 0 0 10px rgba(192, 192, 192, 0.08);
+}
+
+.card-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.card-text {
+    font-size: 18px;
+    color: #a1a1aa;
+    line-height: 1.6;
+}
+
+/* 🎵 중앙 하단 음표 박스 스타일 */
+.dancing-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 40px;
