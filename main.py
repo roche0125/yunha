@@ -12,13 +12,13 @@ st.markdown(
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap');
 
-    /* 1. 사이드바 여닫기 버튼 깨짐 현상 완벽 차단 */
-    [data-testid="stSidebarCollapseButton"] {
-        color: transparent !important;
-    }
-    [data-testid="stSidebarCollapseButton"] button span {
-        font-family: 'Material Symbols Outlined', 'Material Icons' !important;
-        font-size: 0px !important;
+    /* 1. 사이드바 접기/펼치기 버튼 및 텍스트 완벽 차단 */
+    [data-testid="stSidebarCollapseButton"], 
+    [data-testid="stSidebarCollapseButton"] * {
+      display: none !important;
+      visibility: hidden !important;
+      color: transparent !important;
+      font-size: 0px !important;
     }
 
     /* 전체 배경 다크 모드 설정 */
