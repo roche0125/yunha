@@ -1,25 +1,18 @@
-import json
-import time
-import urllib.parse
-import pandas as pd
-import plotly.express as px
 import streamlit as st
-from google import genai
-from google.genai import types
 
-# 페이지 기본 설정
 st.set_page_config(
-    page_title="Sound Palette",
+    page_title="Music Bar",
     page_icon="🖤",
-    layout="wide",
+    layout="wide"
 )
 
-# 다크 테마 및 원형 턴테이블 스타일 주입
+# 구름 바탕(Gowun Batang) 폰트 & 블랙&실버 다크 테마 스타일 적용
 st.markdown(
     """
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap');
 
+    /* 1. 사이드바 여닫기 버튼 깨짐 현상 완벽 차단 */
     [data-testid="stSidebarCollapseButton"] {
         color: transparent !important;
     }
@@ -27,125 +20,207 @@ st.markdown(
         font-family: 'Material Symbols Outlined', 'Material Icons' !important;
         font-size: 0px !important;
     }
-
+   
+    /* 전체 배경 다크 모드 설정 */
     .stApp {
         background-color: #0e0e10;
         color: #e0e0e0;
     }
 
-    [data-testid="stSidebar"] {
-        background-color: #121214 !important;
-        border-right: 1px solid #27272a !important;
-    }
-    [data-testid="stSidebar"] * {
-        color: #e0e0e0 !important;
-    }
-
+    /* 폰트 적용 (구름 바탕 유지) */
     html, body, [class*="css"], div, span, h1, h2, h3, h4, h5, h6, p, label, input, button {
         font-family: 'Gowun Batang', serif !important;
+        color: #e0e0e0;
     }
 
-    h1 { font-size: 40px !important; font-weight: 700; color: #ffffff !important; }
-    h2 { font-size: 30px !important; font-weight: 700; color: #d1d5db !important; }
-    h3 { font-size: 24px !important; font-weight: 700; color: #9ca3af !important; }
-    p, div, label { font-size: 18px; color: #c4c4c4; }
-
-    .stTextInput input {
-        background-color: #18181b !important;
+    /* 제목 및 헤더 스타일 */
+    h1 {
+        font-size: 42px !important;
+        font-weight: 700;
         color: #ffffff !important;
-        border: 1px solid #3f3f46 !important;
-        border-radius: 8px !important;
+        letter-spacing: -1px;
     }
-    .stTextInput input:focus {
-        border-color: #c0c0c0 !important;
-        box-shadow: 0 0 8px rgba(192, 192, 192, 0.3) !important;
-    }
+    h2 { font-size: 32px !important; font-weight: 700; color: #d1d5db !important; }
+    h3 { font-size: 26px !important; font-weight: 700; color: #9ca3af !important; }
+    p, div { font-size: 19px; color: #c4c4c4; }
 
-    .keyword-card {
+    /* 메인 카드 스타일 (블랙 & 실버 감성) */
+    .welcome-card {
         background: linear-gradient(145deg, #18181b, #121214);
         border: 1px solid #3f3f46;
-        border-radius: 10px;
-        padding: 12px 16px;
-        text-align: center;
-        margin-bottom: 8px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-        transition: all 0.5s ease;
+        border-left: 5px solid #c0c0c0;
+        padding: 24px;
+        border-radius: 12px;
+        margin-top: 20px;
+        margin-bottom: 30px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6), 0 0 10px rgba(192, 192, 192, 0.08);
     }
-    .keyword-label {
-        font-size: 14px !important;
-        color: #a1a1aa;
-        margin-bottom: 4px;
-    }
-    .keyword-value {
-        font-size: 20px !important;
-        font-weight: bold;
+
+    .card-title {
+        font-size: 22px;
+        font-weight: 700;
         color: #ffffff;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
 
-    .turntable-box {
-        width: 100%;
-        max-width: 220px;
-        aspect-ratio: 1 / 1;
-        margin: 0 auto;
-        background: linear-gradient(145deg, #18181b, #0e0e10);
-        border: 1px solid #3f3f46;
-        border-radius: 20px;
-        padding: 15px;
+    .card-text {
+        font-size: 18px;
+        color: #a1a1aa;
+        line-height: 1.6;
+    }
+
+    /* 🎵 중앙 하단 음표 박스 스타일 */
+    .dancing-box {
         display: flex;
         justify-content: center;
         align-items: center;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
-        position: relative;
-        transition: all 0.8s ease;
+        gap: 15px;
+        margin-top: 40px;
+        padding: 20px;
+        background: linear-gradient(145deg, #141416, #0e0e10);
+        border: 1px solid #27272a;
+        border-radius: 16px;
+        box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.8);
     }
 
-    .cd-disc {
-        width: 170px;
-        height: 170px;
-        border-radius: 50%;
-        background: radial-gradient(circle at center, transparent 30%, rgba(255, 255, 255, 0.05) 31%, transparent 32%), conic-gradient(from 0deg, #27272a, #52525b, #18181b, #a1a1aa, #27272a, #3f3f46, #18181b, #27272a);
-        border: 2px solid #52525b;
+    .dancing-note {
+        font-size: 24px;
+        animation: danceBeat 1s infinite alternate ease-in-out;
+    }
+
+    .dancing-note:nth-child(1) { animation-delay: 0.1s; }
+    .dancing-note:nth-child(2) { animation-delay: 0.3s; }
+    .dancing-note:nth-child(3) { animation-delay: 0.5s; }
+    .dancing-note:nth-child(4) { animation-delay: 0.2s; }
+
+    @keyframes danceBeat {
+        0% { transform: translateY(0px) scale(0.9); opacity: 0.5; }
+        100% { transform: translateY(-10px) scale(1.1); opacity: 1; }
+    }
+
+    /* 💃 우측 하단 리얼한 인체 곡선 & 드레스 흩날림 애니메이션 */
+    .dancer-container {
+        position: fixed;
+        bottom: 20px;
+        right: 30px;
+        width: 150px;
+        height: 180px;
+        z-index: 999;
+        pointer-events: none;
         display: flex;
         justify-content: center;
         align-items: center;
-        position: relative;
-        overflow: hidden;
     }
 
-    .cd-text-svg {
+    .dancer-glow {
         position: absolute;
-        width: 100%;
-        height: 100%;
-    }
-
-    .cd-curved-text {
-        fill: #e4e4e7;
-        font-size: 11px;
-        font-weight: bold;
-        letter-spacing: 2px;
-        font-family: 'Gowun Batang', serif;
-    }
-
-    .cd-center-hole {
-        width: 32px;
-        height: 32px;
+        width: 130px;
+        height: 130px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.06) 45%, rgba(0, 0, 0, 0) 75%);
         border-radius: 50%;
-        background: #0e0e10;
-        border: 4px solid #a1a1aa;
-        position: absolute;
-        z-index: 5;
+        animation: glowPulse 2s infinite alternate ease-in-out;
     }
 
-    .spin-slow {
-        animation: rotateCD 12s linear infinite;
-    }
-    .spin-fast {
-        animation: rotateCD 2s linear infinite;
+    .realistic-dancer-svg {
+        width: 120px;
+        height: 160px;
+        position: relative;
+        z-index: 2;
+        filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 25px rgba(255, 255, 255, 0.45));
+        animation: bodySway 2.5s infinite alternate ease-in-out;
     }
 
-    @keyframes rotateCD {
+    .body-shape {
+        fill: #ffffff;
+        transform-origin: 60px 50px;
+    }
+
+    .flowing-dress {
+        fill: rgba(255, 255, 255, 0.9);
+        transform-origin: 60px 65px;
+        animation: dressWave 1.6s infinite alternate ease-in-out;
+    }
+
+    .arm-left {
+        fill: none;
+        stroke: #ffffff;
+        stroke-width: 4;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        transform-origin: 55px 35px;
+        animation: armLeftMotion 2s infinite alternate ease-in-out;
+    }
+
+    .arm-right {
+        fill: none;
+        stroke: #ffffff;
+        stroke-width: 4;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        transform-origin: 65px 35px;
+        animation: armRightMotion 2s infinite alternate ease-in-out;
+    }
+
+    .leg-left {
+        fill: none;
+        stroke: #ffffff;
+        stroke-width: 3.5;
+        stroke-linecap: round;
+        transform-origin: 55px 95px;
+        animation: legLeftMotion 1.8s infinite alternate ease-in-out;
+    }
+
+    .leg-right {
+        fill: none;
+        stroke: #ffffff;
+        stroke-width: 3.5;
+        stroke-linecap: round;
+        transform-origin: 65px 95px;
+        animation: legRightMotion 1.8s infinite alternate ease-in-out;
+    }
+
+    @keyframes bodySway {
+        0% { transform: translateY(0px) rotate(-4deg) scale(0.98); }
+        50% { transform: translateY(-8px) rotate(4deg) scale(1.02); }
+        100% { transform: translateY(-3px) rotate(6deg) scale(1); }
+    }
+
+    @keyframes dressWave {
+        0% { transform: rotate(-6deg) skewX(-12deg) scaleX(0.95); }
+        50% { transform: rotate(8deg) skewX(15deg) scaleX(1.12); }
+        100% { transform: rotate(-4deg) skewX(-8deg) scaleX(1.02); }
+    }
+
+    @keyframes armLeftMotion {
         0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+        50% { transform: rotate(-25deg) translateY(-3px); }
+        100% { transform: rotate(15deg); }
+    }
+
+    @keyframes armRightMotion {
+        0% { transform: rotate(0deg); }
+        50% { transform: rotate(30deg) translateY(-3px); }
+        100% { transform: rotate(-15deg); }
+    }
+
+    @keyframes legLeftMotion {
+        0% { transform: rotate(0deg); }
+        50% { transform: rotate(12deg); }
+        100% { transform: rotate(-8deg); }
+    }
+
+    @keyframes legRightMotion {
+        0% { transform: rotate(0deg); }
+        50% { transform: rotate(-15deg); }
+        100% { transform: rotate(10deg); }
+    }
+
+    @keyframes glowPulse {
+        0% { opacity: 0.5; transform: scale(0.95); }
+        100% { opacity: 1; transform: scale(1.25); }
     }
 
     hr {
@@ -156,168 +231,56 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-st.title("🖤 Sound Palette")
-st.caption("가사 속 감정 레이어와 바이브, 컬러 톤을 분석해드립니다.")
+# 헤더 영역
+st.title("🖤 Welcome to Music Hub")
+st.write("Deep & Chill Music Bar 🍸")
 
-try:
-    api_key = st.secrets["GEMINI_API_KEY"]
-except Exception:
-    api_key = None
+st.markdown("<hr>", unsafe_allow_html=True)
 
-main_col_left, main_col_right = st.columns([7, 5])
-
-with main_col_left:
-    col1, col2 = st.columns(2)
-    with col1:
-        song_title = st.text_input("Title", placeholder="예: BLUE")
-    with col2:
-        artist = st.text_input("Singer", placeholder="예: Winter")
-
-    btn_analyze = st.button("🎧 Decode Mood", use_container_width=True)
-
-def render_turntable(display_text="MUSIC HUB * STREAMLIT *", is_fast=False):
-    mode = "spin-fast" if is_fast else "spin-slow"
-    html_code = f"""
-    <div class="turntable-box" id="turntableBox">
-        <div class="cd-disc {mode}">
-            <svg class="cd-text-svg" viewBox="0 0 170 170">
-              <path id="textPath" d="M 22,85 A 63,63 0 1,1 148,85 A 63,63 0 1,1 22,85" fill="none" />
-              <text class="cd-curved-text">
-                <textPath href="#textPath" startOffset="50%" text-anchor="middle">{display_text}  •  </textPath>
-              </text>
-            </svg>
-            <div class="cd-center-hole"></div>
+# 안내 카드 영역
+st.markdown(
+    """
+    <div class="welcome-card">
+        <div class="card-title">
+            <span>💿</span> Guideline
+        </div>
+        <div class="card-text">
+            사이드바에서 원하는 모드를 선택하세요.<br>
+            가사 감정 분석부터 커스텀 플레이리스트 큐레이션까지 🎧
         </div>
     </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+# 하단 중앙 음표 애니메이션 박스
+st.markdown(
     """
-    st.markdown(html_code, unsafe_allow_html=True)
+    <div class="dancing-box">
+        <span class="dancing-note">🎵</span>
+        <span class="dancing-note">🖤</span>
+        <span class="dancing-note">🎶</span>
+        <span class="dancing-note">🍸</span>
+        <span class="dancing-note">💿</span>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
-with main_col_right:
-    current_label = f"{song_title} - {artist}" if (song_title and artist) else (song_title if song_title else "MUSIC HUB")
-    if not btn_analyze:
-        render_turntable(display_text=current_label, is_fast=False)
-
-if btn_analyze:
-    with main_col_right:
-        active_label = f"{song_title} - {artist}" if (song_title and artist) else (song_title if song_title else "MUSIC HUB")
-        render_turntable(display_text=active_label, is_fast=True)
-
-    if not api_key:
-        st.error("Streamlit Secrets에 'GEMINI_API_KEY'가 설정되어 있지 않습니다.")
-    elif not song_title or not artist:
-        st.warning("노래 제목과 가수 이름을 모두 입력해 주세요.")
-    else:
-        with st.spinner("Analyzing lyrical emotions and rendering the visual palette... 🖤"):
-            try:
-                client = genai.Client(api_key=api_key)
-                
-                prompt = (
-                    "다음 노래의 가사와 전체적인 곡 분위기를 정밀 분석해서 반드시 지정된 JSON 규격으로만 응답해줘.\n\n"
-                    f"노래 제목: {song_title}\n"
-                    f"가수: {artist}\n\n"
-                    "응답할 JSON 구조:\n"
-                    "{\n"
-                    '    "theme_summary": "한 줄 요약",\n'
-                    '    "emotions": [\n'
-                    '        {"emotion": "기쁨", "ratio": 50},\n'
-                    '        {"emotion": "슬픔", "ratio": 50}\n'
-                    "    ],\n"
-                    '    "keywords": ["키워드1", "키워드2", "키워드3", "키워드4", "키워드5"],\n'
-                    '    "vibe_color": "대표 색상 이름",\n'
-                    '    "color_hex": "#1E3A8A",\n'
-                    '    "vibe_description": "설명"\n'
-                    "}"
-                )
-
-                max_retries = 3
-                response = None
-                for attempt in range(max_retries):
-                    try:
-                        response = client.models.generate_content(
-                            model="gemini-3.8-flash",
-                            contents=prompt,
-                            config=types.GenerateContentConfig(response_mime_type="application/json"),
-                        )
-                        break
-                    except Exception as api_err:
-                        if "503" in str(api_err) or "UNAVAILABLE" in str(api_err):
-                            if attempt < max_retries - 1:
-                                time.sleep(2)
-                                continue
-                        raise api_err
-
-                data = json.loads(response.text)
-                hex_code = data.get("color_hex", "#3182CE")
-
-                # 🌟 3번: 분석 결과 대표 컬러로 은은한 앰비언트 글로우(Ambient Glow) 주입 🖤
-                glow_css = f"""
-                <style>
-                .turntable-box {{
-                    box-shadow: 0 0 35px {hex_code}66, 0 10px 30px rgba(0, 0, 0, 0.8) !important;
-                    border-color: {hex_code}AA !important;
-                }}
-                .keyword-card {{
-                    box-shadow: 0 4px 15px {hex_code}33 !important;
-                    border-color: {hex_code}55 !important;
-                }}
-                </style>
-                """
-                st.markdown(glow_css, unsafe_allow_html=True)
-
-                st.success("Decode Complete 🎧")
-                st.divider()
-
-                st.subheader("📌 Subject & Theme")
-                col_info, col_color = st.columns([3, 1])
-                with col_info:
-                    st.info(f"**Summary:** {data.get('theme_summary', '')}")
-                    st.write(f"**💡 Vibe:** {data.get('vibe_description', '')}")
-                with col_color:
-                    color_name = data.get("vibe_color", "Color")
-                    st.markdown(
-                        f'<div style="background-color: {hex_code}; padding: 20px; border-radius: 12px; text-align: center; color: white; font-weight: bold; box-shadow: 0 0 20px {hex_code}88;">대표 컬러<br><br>{color_name}</div>',
-                        unsafe_allow_html=True,
-                    )
-
-                st.divider()
-                st.subheader("📊 Emotion Ratio")
-                df_emotions = pd.DataFrame(data.get("emotions", []))
-                if not df_emotions.empty:
-                    fig = px.bar(df_emotions, x="emotion", y="ratio", text="ratio")
-                    fig.update_traces(marker_color=hex_code, textposition="outside")
-                    fig.update_layout(height=350, paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#e0e0e0"))
-                    st.plotly_chart(fig, use_container_width=True)
-
-                st.divider()
-                st.subheader("🔑 Keywords Top 5")
-                keywords = data.get("keywords", [])
-                if keywords:
-                    kw_cols = st.columns(len(keywords))
-                    for idx, kw in enumerate(keywords):
-                        with kw_cols[idx]:
-                            st.markdown(f'<div class="keyword-card"><div class="keyword-label">Keyword {idx+1}</div><div class="keyword-value"># {kw}</div></div>', unsafe_allow_html=True)
-
-                # 🔗 유튜브 자동 연결 Listen 버튼
-                query_str = urllib.parse.quote(f"{artist} {song_title}")
-                yt_search_url = f"https://www.youtube.com/results?search_query={query_str}"
-                
-                st.markdown("")
-                st.markdown(
-                    f'''
-                    <div style="text-align: center; margin-top: 25px;">
-                        <a href="{yt_search_url}" target="_blank" style="text-decoration: none;">
-                            <button style="background-color: #18181b; color: #ffffff; border: 1px solid {hex_code}88; padding: 10px 24px; border-radius: 20px; font-size: 15px; font-weight: bold; cursor: pointer; font-family: 'Gowun Batang', serif; box-shadow: 0 0 15px {hex_code}44;">
-                                ▶ Listen on YouTube
-                            </button>
-                        </a>
-                    </div>
-                    ''',
-                    unsafe_allow_html=True
-                )
-
-            except Exception as e:
-                err_msg = str(e)
-                if "503" in err_msg or "UNAVAILABLE" in err_msg:
-                    st.warning("⏳ **Server Busy:** 현재 AI 서버가 붐비고 있어! 잠시 후(10~20초 뒤)에 다시 버튼을 눌러줘 🖤✨")
-                else:
-                    st.error(f"⚠️ 오류가 발생했습니다: {e}")
+# 우측 하단 리얼한 인체 곡선 & 드레스 실루엣 춤추는 애니메이션
+dancer_html = """
+<div class="dancer-container">
+    <div class="dancer-glow"></div>
+    <svg class="realistic-dancer-svg" viewBox="0 0 120 160">
+        <path class="body-shape" d="M57 15 C53 15 50 18 50 22 C50 26 53 29 57 29 C61 29 64 26 64 22 C64 18 61 15 57 15 Z" />
+        <path d="M55 29 L55 35 L61 35 L61 29 Z" fill="#ffffff" />
+        <path class="body-shape" d="M48 37 C45 37 42 42 45 48 C48 54 53 58 58 63 C63 58 68 54 71 48 C74 42 71 37 68 37 C64 37 61 44 58 44 C55 44 52 37 48 37 Z" />
+        <path class="arm-left" d="M46 41 C36 46 28 38 22 30" />
+        <path class="arm-right" d="M70 41 C82 38 92 48 98 56" />
+        <path class="flowing-dress" d="M50 62 C35 72 18 95 12 122 C32 128 55 125 72 115 C88 122 102 125 110 120 C102 92 82 72 68 62 C63 60 55 60 50 62 Z" />
+        <path class="leg-left" d="M48 115 L40 152" />
+        <path class="leg-right" d="M74 112 L84 148" />
+    </svg>
+</div>
+"""
+st.markdown(dancer_html, unsafe_allow_html=True)
