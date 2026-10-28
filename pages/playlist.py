@@ -226,7 +226,7 @@ if generate_clicked:
             for attempt in range(max_retries):
                 try:
                     response = client.models.generate_content(
-                        model='gemini-3.8-flash',
+                        model='gemini-2.5-flash',  # 👈 이 부분을 gemini-2.5-flash로 변경!
                         contents=prompt
                     )
                     break
