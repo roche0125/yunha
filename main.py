@@ -78,3 +78,195 @@ p, div { font-size: 19px; color: #c4c4c4; }
     align-items: center;
     gap: 15px;
     margin-top: 40px;
+    padding: 20px;
+    background: linear-gradient(145deg, #141416, #0e0e10);
+    border: 1px solid #27272a;
+    border-radius: 16px;
+    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.8);
+}
+
+.dancing-note {
+    font-size: 24px;
+    animation: danceBeat 1s infinite alternate ease-in-out;
+}
+
+.dancing-note:nth-child(1) { animation-delay: 0.1s; }
+.dancing-note:nth-child(2) { animation-delay: 0.3s; }
+.dancing-note:nth-child(3) { animation-delay: 0.5s; }
+.dancing-note:nth-child(4) { animation-delay: 0.2s; }
+
+@keyframes danceBeat {
+    0% { transform: translateY(0px) scale(0.9); opacity: 0.5; }
+    100% { transform: translateY(-10px) scale(1.1); opacity: 1; }
+}
+
+/* 💃 우측 하단 리얼한 인체 라인 & 드레스 흩날림 애니메이션 🤍 */
+.dancer-container {
+    position: fixed;
+    bottom: 20px;
+    right: 30px;
+    width: 150px;
+    height: 180px;
+    z-index: 999;
+    pointer-events: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dancer-glow {
+    position: absolute;
+    width: 130px;
+    height: 130px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.06) 45%, rgba(0, 0, 0, 0) 75%);
+    border-radius: 50%;
+    animation: glowPulse 2s infinite alternate ease-in-out;
+}
+
+.realistic-dancer-svg {
+    width: 120px;
+    height: 160px;
+    position: relative;
+    z-index: 2;
+    filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 25px rgba(255, 255, 255, 0.45));
+    animation: bodySway 2.5s infinite alternate ease-in-out;
+}
+
+/* 우아한 몸통 실루엣 */
+.body-shape {
+    fill: #ffffff;
+    transform-origin: 60px 50px;
+}
+
+/* 흩날리는 풍성한 드레스 스커트 */
+.flowing-dress {
+    fill: rgba(255, 255, 255, 0.9);
+    transform-origin: 60px 65px;
+    animation: dressWave 1.6s infinite alternate ease-in-out;
+}
+
+/* 우아한 팔 움직임 */
+.arm-left {
+    fill: none;
+    stroke: #ffffff;
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transform-origin: 55px 35px;
+    animation: armLeftMotion 2s infinite alternate ease-in-out;
+}
+
+.arm-right {
+    fill: none;
+    stroke: #ffffff;
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transform-origin: 65px 35px;
+    animation: armRightMotion 2s infinite alternate ease-in-out;
+}
+
+/* 다리 움직임 */
+.leg-left {
+    fill: none;
+    stroke: #ffffff;
+    stroke-width: 3.5;
+    stroke-linecap: round;
+    transform-origin: 55px 95px;
+    animation: legLeftMotion 1.8s infinite alternate ease-in-out;
+}
+
+.leg-right {
+    fill: none;
+    stroke: #ffffff;
+    stroke-width: 3.5;
+    stroke-linecap: round;
+    transform-origin: 65px 95px;
+    animation: legRightMotion 1.8s infinite alternate ease-in-out;
+}
+
+@keyframes bodySway {
+    0% { transform: translateY(0px) rotate(-4deg) scale(0.98); }
+    50% { transform: translateY(-8px) rotate(4deg) scale(1.02); }
+    100% { transform: translateY(-3px) rotate(6deg) scale(1); }
+}
+
+@keyframes dressWave {
+    0% { transform: rotate(-6deg) skewX(-12deg) scaleX(0.95); }
+    50% { transform: rotate(8deg) skewX(15deg) scaleX(1.12); }
+    100% { transform: rotate(-4deg) skewX(-8deg) scaleX(1.02); }
+}
+
+@keyframes armLeftMotion {
+    0% { transform: rotate(0deg); }
+    50% { transform: rotate(-25deg) translateY(-3px); }
+    100% { transform: rotate(15deg); }
+}
+
+@keyframes armRightMotion {
+    0% { transform: rotate(0deg); }
+    50% { transform: rotate(30deg) translateY(-3px); }
+    100% { transform: rotate(-15deg); }
+}
+
+@keyframes legLeftMotion {
+    0% { transform: rotate(0deg); }
+    50% { transform: rotate(12deg); }
+    100% { transform: rotate(-8deg); }
+}
+
+@keyframes legRightMotion {
+    0% { transform: rotate(0deg); }
+    50% { transform: rotate(-15deg); }
+    100% { transform: rotate(10deg); }
+}
+
+@keyframes glowPulse {
+    0% { opacity: 0.5; transform: scale(0.95); }
+    100% { opacity: 1; transform: scale(1.25); }
+}
+</style>
+""", unsafe_allow_html=True)
+
+# 헤더 영역
+st.title("🖤 Welcome to Music Hub")
+st.write("Deep & Chill Music Bar 🍸")
+
+st.markdown("<hr>", unsafe_allow_html=True)
+
+# 안내 카드 영역
+st.markdown("""
+<div class="welcome-card">
+    <div class="card-title">
+        <span>💿</span> Guideline
+    </div>
+    <div class="card-text">
+        사이드바에서 원하는 모드를 선택하세요.<br>
+        가사 감정 분석부터 커스텀 플레이리스트 큐레이션까지 🎧
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# 하단 중앙 음표 애니메이션 박스
+st.markdown("""
+<div class="dancing-box">
+    <span class="dancing-note">🎵</span>
+    <span class="dancing-note">🖤</span>
+    <span class="dancing-note">🎶</span>
+    <span class="dancing-note">🍸</span>
+    <span class="dancing-note">💿</span>
+</div>
+""", unsafe_allow_html=True)
+
+# 우측 하단 리얼한 인체 곡선 & 드레스 실루엣 춤추는 애니메이션
+st.markdown("""
+<div class="dancer-container">
+    <div class="dancer-glow"></div>
+    <svg class="realistic-dancer-svg" viewBox="0 0 120 160">
+        <path class="body-shape" d="M57 15 C53 15 50 18 50 22 C50 26 53 29 57 29 C61 29 64 26 64 22 C64 18 61 15 57 15 Z" />
+        <path d="M55 29 L55 35 L61 35 L61 29 Z" fill="#ffffff" />
+        <path class="body-shape" d="M48 37 C45 37 42 42 45 48 C48 54 53 58 58 63 C63 58 68 54 71 48 C74 42 71 37 68 37 C64 37 61 44 58 44 C55 44 52 37 48 37 Z" />
+        <path class="arm-left" d="M46 41 C36 46 28 38 22 30" />
+        <path class="arm-right" d="M70 41 C82 38 92 48 98 56" />
+        <path class="flowing-dress" d="M50 62 C35 72 18 95 12 122 C32 128 55 125 72 115 C88 122 102 125 110 120 C102 92 82 72 68 62 C63 60 55 60 50 62 Z" />
+        <path class="leg-left" d="M48 115 L40 152" />
