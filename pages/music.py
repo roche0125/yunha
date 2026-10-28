@@ -14,15 +14,6 @@ st.set_page_config(
     layout="wide",
 )
 
-/* 1. 사이드바 접기/펼치기 버튼 및 텍스트 완벽 차단 */
-[data-testid="stSidebarCollapseButton"], 
-[data-testid="stSidebarCollapseButton"] * {
-  display: none !important;
-  visibility: hidden !important;
-  color: transparent !important;
-  font-size: 0px !important;
-}
-
 # 다크 테마 및 원형 턴테이블 스타일 주입
 st.markdown(
     """
