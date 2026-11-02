@@ -18,6 +18,17 @@ st.set_page_config(
 st.markdown(
     """
     <style>
+
+    /* 사이드바 접기/펼치기 버튼은 남겨두고, 깨지는 텍스트만 투명하게 숨기기 */
+    [data-testid="stSidebarCollapseButton"] button {
+        font-size: 0px !important;
+        color: transparent !important;
+    }
+    [data-testid="stSidebarCollapseButton"] button svg {
+        font-size: 16px !important;
+        color: #e0e0e0 !important; /* 버튼 아이콘 색상 */
+    }
+    
     @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap');
 
     [data-testid="stSidebarCollapseButton"] {
