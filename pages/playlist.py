@@ -4,6 +4,7 @@ import time
 import urllib.parse  # 🔗 유튜브 검색 URL 인코딩을 위해 추가
 import streamlit as st
 from google import genai
+from google.genai.errors import ServerError # 💙 서버 에러 처리를 위해 추가
 
 # 페이지 기본 설정
 st.set_page_config(page_title="AI Playlist", page_icon="🎧", layout="wide")
@@ -205,7 +206,6 @@ if generate_clicked:
 
     if client:
         with st.spinner("Analyzing your vibe and calibrating the ultimate tracklist... 💙"):
-            # 프롬프트에 유튜브 Listen 링크 생성 규칙 추가 🖤
             prompt = f"""
             다음 조건에 완벽히 어울리는 음악 플레이리스트를 작성해줘.
             
@@ -220,29 +220,36 @@ if generate_clicked:
             1. 추천 플레이리스트 제목 (감성적이고 센스 있는 제목)
             2. 선곡 이유 요약 (다정한 말투로 2~3줄)
             3. 곡 리스트는 아래 포맷을 엄격히 맞춰서 작성해줘:
-               - **번호. 곡명 - 아티스트** [`[▶️ Listen]`](https://www.youtube.com/results?search_query=곡명+아티스트) (추천 이유 한 줄)
-               *(주의: `search_query=` 뒤에는 해당 곡의 곡명과 아티스트를 띄어쓰기 대신 '+'를 써서 정확한 URL 링크를 만들어줘!)*
+                - **번호. 곡명 - 아티스트** [`[▶️ Listen]`](https://www.youtube.com/results?search_query=곡명+아티스트) (추천 이유 한 줄)
+                *(주의: `search_query=` 뒤에는 해당 곡의 곡명과 아티스트를 띄어쓰기 대신 '+'를 써서 정확한 URL 링크를 만들어줘!)*
             """
             
             max_retries = 3
             response = None
+            success = True
+            
             for attempt in range(max_retries):
                 try:
                     response = client.models.generate_content(
                         model='gemini-3.8-flash',
                         contents=prompt
                     )
+                    success = True
                     break
                 except Exception as api_err:
                     err_str = str(api_err)
-                    if "503" in err_str or "UNAVAILABLE" in err_str or "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
+                    if "503" in err_str or "UNAVAILABLE" in err_str or "429" in err_str or "RESOURCE_EXHAUSTED" in err_str or isinstance(api_err, ServerError):
                         if attempt < max_retries - 1:
                             time.sleep(3)
                             continue
-                    raise api_err
+                    success = False
+                    break
 
-            st.success("Build Complete 🖤")
-            st.markdown(response.text)
+            if success and response:
+                st.success("Build Complete 🖤")
+                st.markdown(response.text)
+            else:
+                st.error("서버가 잠시 불안정하거나 일시적인 오류가 발생했어요! 🥲 잠시 후에 다시 시도해 주세요. 💙")
             
     else:
         st.info("💡 Gemini API 키가 설정되지 않아 규칙 기반(알고리즘)으로 추천해줄게!")
@@ -260,11 +267,9 @@ if generate_clicked:
         
         st.write(f"### 🎧 [알고리즘 추천] {situation_str} 맞춤 리스트 ({playlist_length}분 분량)")
         for i, song in enumerate(recommended, 1):
-            # 유튜브 검색 URL 자동 생성
             search_query = urllib.parse.quote(f"{song['title']} {song['artist']}")
             yt_url = f"https://www.youtube.com/results?search_query={search_query}"
             
-            # Streamlit 컬럼을 이용해 깔끔하게 버튼 배치
             c1, c2 = st.columns([4, 1])
             with c1:
                 st.write(f"**{i}. {song['title']}** - {song['artist']} `[{song['genre']}]`")
