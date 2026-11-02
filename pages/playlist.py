@@ -1,6 +1,7 @@
 import os
 import random
 import time
+import urllib.parse  # 🔗 유튜브 검색 URL 인코딩을 위해 추가
 import streamlit as st
 from google import genai
 
@@ -113,7 +114,7 @@ if api_key:
     except Exception as e:
         st.warning(f"Gemini API 연결 실패: {e}")
 
-# 2. 메인 화면 구성 (제목 옆에 오디오 파형 애니메이션 추가 🖤)
+# 2. 메인 화면 구성
 title_html = """
 <div style="display: flex; align-items: center; flex-wrap: wrap;">
     <h1 style="margin: 0; padding: 0;">🎧 My Own Playlist 🖤</h1>
@@ -131,7 +132,7 @@ st.caption("당신의 무드와 순간에 맞춘 커스텀 플레이리스트 �
 
 st.markdown("---")
 
-# 3. 입력 세션: 슬라이더 & 선택버튼 (좌우 여백과 두 컬럼 사이 간격 대칭 맞춤)
+# 3. 입력 세션
 _, col_left, _, col_right, _ = st.columns([1, 4, 0.8, 4, 1])
 
 with col_left:
@@ -204,6 +205,7 @@ if generate_clicked:
 
     if client:
         with st.spinner("Analyzing your vibe and calibrating the ultimate tracklist... 💙"):
+            # 프롬프트에 유튜브 Listen 링크 생성 규칙 추가 🖤
             prompt = f"""
             다음 조건에 완벽히 어울리는 음악 플레이리스트를 작성해줘.
             
@@ -214,19 +216,20 @@ if generate_clicked:
             - 현재 상황: {situation_str}
             - 선호 장르: {genres_str}
             
-            [출력 형식]
+            [출력 형식 및 주의사항]
             1. 추천 플레이리스트 제목 (감성적이고 센스 있는 제목)
             2. 선곡 이유 요약 (다정한 말투로 2~3줄)
-            3. 곡 리스트 (번호, 곡명, 아티스트, 추천 이유 한 줄)
+            3. 곡 리스트는 아래 포맷을 엄격히 맞춰서 작성해줘:
+               - **번호. 곡명 - 아티스트** [`[▶️ Listen]`](https://www.youtube.com/results?search_query=곡명+아티스트) (추천 이유 한 줄)
+               *(주의: `search_query=` 뒤에는 해당 곡의 곡명과 아티스트를 띄어쓰기 대신 '+'를 써서 정확한 URL 링크를 만들어줘!)*
             """
             
-            # 에러 방지용 재시도 로직 추가 🖤
             max_retries = 3
             response = None
             for attempt in range(max_retries):
                 try:
                     response = client.models.generate_content(
-                        model='gemini-3.8-flash',  # 👈 이 부분을 gemini-3.8-flash로 변경!
+                        model='gemini-2.5-flash',
                         contents=prompt
                     )
                     break
@@ -257,4 +260,13 @@ if generate_clicked:
         
         st.write(f"### 🎧 [알고리즘 추천] {situation_str} 맞춤 리스트 ({playlist_length}분 분량)")
         for i, song in enumerate(recommended, 1):
-            st.write(f"**{i}. {song['title']}** - {song['artist']} `[{song['genre']}]`")
+            # 유튜브 검색 URL 자동 생성
+            search_query = urllib.parse.quote(f"{song['title']} {song['artist']}")
+            yt_url = f"https://www.youtube.com/results?search_query={search_query}"
+            
+            # Streamlit 컬럼을 이용해 깔끔하게 버튼 배치
+            c1, c2 = st.columns([4, 1])
+            with c1:
+                st.write(f"**{i}. {song['title']}** - {song['artist']} `[{song['genre']}]`")
+            with c2:
+                st.link_button("▶️ Listen", yt_url, use_container_width=True)
