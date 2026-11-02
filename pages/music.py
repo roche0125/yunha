@@ -285,7 +285,7 @@ if btn_analyze:
                 with col_color:
                     color_name = data.get("vibe_color", "Color")
                     st.markdown(
-                        f'<div style="background-color: {hex_code}; padding: 20px; border-radius: 12px; text-align: center; color: white; font-weight: bold; box-shadow: 0 0 20px {hex_code}88;">대표 컬러<br><br>{color_name}</div>',
+                        f'<div style="background-color: {hex_code}; padding: 20px; border-radius: 12px; text-align: center; color: white; font-weight: bold; box-shadow: 0 0 20px {hex_code}88;">Color<br><br>{color_name}</div>',
                         unsafe_allow_html=True,
                     )
 
