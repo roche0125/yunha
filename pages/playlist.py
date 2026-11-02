@@ -14,12 +14,12 @@ font_css = """
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap');
 
-/* 1. 사이드바 버그 텍스트 차단 */
-[data-testid="stSidebarCollapseButton"] {
+/* 1. 사이드바 접기/펼치기 버튼 및 텍스트 완벽 차단 */
+[data-testid="stSidebarCollapseButton"], 
+[data-testid="stSidebarCollapseButton"] * {
+    display: none !important;
+    visibility: hidden !important;
     color: transparent !important;
-}
-[data-testid="stSidebarCollapseButton"] button span {
-    font-family: 'Material Symbols Outlined', 'Material Icons' !important;
     font-size: 0px !important;
 }
 
